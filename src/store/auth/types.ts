@@ -1,6 +1,6 @@
 export interface UserState {
   user?: IUser | null;
-  loading: Boolean;
+  loading: boolean;
   error?: string | null;
 }
 
