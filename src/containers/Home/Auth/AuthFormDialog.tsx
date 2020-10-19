@@ -12,8 +12,10 @@ import {
   IFormElement,
   IDialogProps,
   IAuthData,
+  IControls,
 } from "../../../interfaces";
 import ButtonCircularProgress from "../../../components/ui/ButtonCircularProgress/ButtonCircularProgress";
+import HighlitedInformation from "../../../components/ui/HighlitedInformation/HighlightedInformation";
 import { FormInput, PasswordInput } from "../../../components/ui/input/input";
 import FormDialog from "../../../components/ui/formDialog/formDialog";
 
@@ -215,26 +217,47 @@ const AuthFormDialog: React.FC<AuthFormDialogProps> = ({
     });
   };
 
+  const checkFormValidity = () => {
+    const { controls } = authFormState;
+    const checkedControls: IControls = {};
+    let formIsValid: boolean = true;
+    Object.keys(controls).forEach((inputId) => {
+      checkedControls[inputId] = {
+        ...controls[inputId],
+        validation: checkValidity(
+          controls[inputId].value,
+          controls[inputId].validation
+        ),
+      };
+      formIsValid = checkedControls[inputId].validation.valid && formIsValid;
+    });
+    setAuthFormState({
+      controls: checkedControls,
+      formIsValid,
+    });
+  };
+
   const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    if (dialogType === "login") {
-      const { email, password } = authFormState.controls;
-      const authData: IAuthData = {
-        email: email.value,
-        password: password.value,
-      };
-      const isSignUp: boolean = false;
-      onAuth(authData, isSignUp);
-    } else if (dialogType === "register") {
-      const { email, password, name } = authFormState.controls;
-      const authData: IAuthData = {
-        email: email.value,
-        password: password.value,
-        username: name.value,
-      };
-      const isSignUp: boolean = true;
-      onAuth(authData, isSignUp);
+    if (authFormState.formIsValid) {
+      if (dialogType === "login") {
+        const { email, password } = authFormState.controls;
+        const authData: IAuthData = {
+          email: email.value,
+          password: password.value,
+        };
+        const isSignUp: boolean = false;
+        onAuth(authData, isSignUp);
+      } else if (dialogType === "register") {
+        const { email, password, name } = authFormState.controls;
+        const authData: IAuthData = {
+          email: email.value,
+          password: password.value,
+          username: name.value,
+        };
+        const isSignUp: boolean = true;
+        onAuth(authData, isSignUp);
+      }
     }
   };
 
@@ -269,13 +292,17 @@ const AuthFormDialog: React.FC<AuthFormDialogProps> = ({
       );
     }
   });
+
+  const errorsInfo = error ? (
+    <HighlitedInformation>{error}</HighlitedInformation>
+  ) : null;
   const formActions: ReactNode = (
     <Button
       type="submit"
       fullWidth
       variant="contained"
       color="secondary"
-      disabled={isLoading}
+      disabled={isLoading || !authFormState.formIsValid}
       size="large"
     >
       {title}
@@ -286,6 +313,7 @@ const AuthFormDialog: React.FC<AuthFormDialogProps> = ({
     <FormDialog
       actions={formActions}
       content={formContent}
+      info={errorsInfo}
       title={title}
       onClose={onClose}
       onSubmit={submitHandler}

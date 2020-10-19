@@ -32,6 +32,7 @@ interface IFormDialogProps {
   onClose: () => void;
   title: string;
   content: ReactNode;
+  info?: ReactNode | null;
   actions: ReactNode;
   loading: boolean;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -42,6 +43,7 @@ const FormDialog: React.FC<IFormDialogProps> = ({
   onClose,
   title,
   content,
+  info,
   actions,
   onSubmit,
   loading,
@@ -75,8 +77,9 @@ const FormDialog: React.FC<IFormDialogProps> = ({
       </DialogTitle>
 
       <DialogContent className={classes.dialogContent}>
-        <form noValidate onSubmit={onSubmit}>
+        <form onSubmit={onSubmit}>
           {content}
+          {info}
           <Box width="100%" className={classes.actions}>
             {actions}
           </Box>

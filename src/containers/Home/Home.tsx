@@ -10,7 +10,7 @@ import { RootState } from "../../store/index";
 import { getUserInfo } from "../../store/auth/actions";
 
 const mapStateToProps = (state: RootState) => ({
-  isLoggedIn: !!state.auth.user?.token,
+  isLoggedIn: !!state.auth.user?.id,
 });
 const mapDispatchToProps = (dispatch: ThunkDispatch<RootState, any, any>) => {
   return {

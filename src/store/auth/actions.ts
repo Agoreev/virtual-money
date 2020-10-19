@@ -64,18 +64,26 @@ export const auth = (
     //2. Send auth request to the API
     const authResp = await fetch(baseURL + url, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(body),
     });
-    const { token } = await authResp.json();
+    if (!authResp.ok) {
+      const error: string = await authResp.text();
+      dispatch(authFailed(error));
+    } else {
+      const { id_token } = await authResp.json();
 
-    //3. Set token in local storage
-    localStorage.setItem("token", token);
+      //3. Set token in local storage
+      localStorage.setItem("token", id_token);
 
-    //4. Dispatch get user info thunk action
-    dispatch(getUserInfo());
+      //4. Dispatch get user info thunk action
+      dispatch(getUserInfo());
+    }
   } catch (error) {
     console.log(error);
-    dispatch(authFailed(error));
+    dispatch(authFailed("Something went wrong, but we already fixing it!"));
   }
 };
 
@@ -97,14 +105,21 @@ export const getUserInfo = (): ThunkAction<
         method: "GET",
         credentials: "include",
         headers: {
-          Authorization: token,
+          Authorization: "Bearer " + token,
           "Content-Type": "application/json",
         },
       });
-      const user: IUser = await userResp.json();
 
-      //3. Dispatch auth success action with user info
-      dispatch(authSuccess(user));
+      if (!userResp.ok) {
+        const error: string = await userResp.text();
+        dispatch(authFailed(error));
+      } else {
+        const userJSON: any = await userResp.json();
+        const user: IUser = userJSON.user_info_token;
+
+        //3. Dispatch auth success action with user info
+        dispatch(authSuccess(user));
+      }
     } catch (error) {
       console.log(error);
       dispatch(authFailed(error));
