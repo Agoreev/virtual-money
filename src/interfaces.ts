@@ -62,7 +62,19 @@ export interface IAuthForm {
   formIsValid: boolean;
 }
 
+export enum dialogType {
+  login = "login",
+  register = "register",
+}
 export interface IDialogProps {
   onClose: () => void;
   open: boolean;
+  dialogType: dialogType;
+  title: string;
+}
+
+export interface IAuthData {
+  email: string;
+  username?: string;
+  password: String;
 }

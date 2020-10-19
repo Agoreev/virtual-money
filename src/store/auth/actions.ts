@@ -8,6 +8,7 @@ import {
   AUTH_SUCCESS,
   authActionTypes,
 } from "./types";
+import { IAuthData } from "../../interfaces";
 import { Action } from "redux";
 import { baseURL } from "../../api/api";
 
@@ -38,12 +39,6 @@ export const logout = (): authActionTypes => {
   };
 };
 
-interface IAuthData {
-  email: string;
-  name?: string;
-  password: String;
-}
-
 export const auth = (
   authData: IAuthData,
   isSignUp: Boolean
@@ -69,9 +64,7 @@ export const auth = (
     //2. Send auth request to the API
     const authResp = await fetch(baseURL + url, {
       method: "POST",
-      body: JSON.stringify({
-        ...body,
-      }),
+      body: JSON.stringify(body),
     });
     const { token } = await authResp.json();
 

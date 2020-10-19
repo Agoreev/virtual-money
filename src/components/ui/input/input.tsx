@@ -6,7 +6,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import OutlinedInput from "@material-ui/core/Input";
+import OutlinedInput from "@material-ui/core/OutlinedInput";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
@@ -18,7 +18,7 @@ interface IInput {
   changed: any;
 }
 
-const FormInput: React.FC<IInput> = ({ control, changed }) => {
+export const FormInput: React.FC<IInput> = ({ control, changed }) => {
   let inputElement = null;
 
   const { elType, label, touched, validation, value, elConfig } = control;
@@ -42,38 +42,6 @@ const FormInput: React.FC<IInput> = ({ control, changed }) => {
           onChange={changed}
           variant="outlined"
         />
-      );
-      break;
-    case "passwordInput":
-      const {
-        showPwd,
-        handleClickShowPassword,
-        handleMouseDownPassword,
-      } = elConfig!;
-      console.log(elConfig);
-      inputElement = (
-        <FormControl fullWidth variant="outlined" margin="normal">
-          <InputLabel htmlFor="standard-adornment-password">{label}</InputLabel>
-          <OutlinedInput
-            id={label}
-            type={showPwd ? "text" : "password"}
-            value={value}
-            error={!validation.valid && touched}
-            onChange={changed}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                >
-                  {showPwd ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            }
-          />
-          <FormHelperText>{helperText}</FormHelperText>
-        </FormControl>
       );
       break;
     case "textarea":
@@ -132,4 +100,49 @@ const FormInput: React.FC<IInput> = ({ control, changed }) => {
   return inputElement;
 };
 
-export default FormInput;
+interface IPasswordInput {
+  control: IControl;
+  changed: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  showPwd: boolean;
+  handleClickShowPassword: () => void;
+  handleMouseDownPassword: (event: React.MouseEvent<HTMLButtonElement>) => void;
+}
+export const PasswordInput: React.FC<IPasswordInput> = ({
+  control,
+  changed,
+  showPwd,
+  handleMouseDownPassword,
+  handleClickShowPassword,
+}) => {
+  const { label, touched, validation, value } = control;
+  let helperText: string = "";
+  if (validation && !validation.valid && touched) {
+    helperText = validation.validationErrors![0];
+  }
+
+  return (
+    <FormControl fullWidth variant="outlined" margin="normal">
+      <InputLabel htmlFor="standard-adornment-password">{label}</InputLabel>
+      <OutlinedInput
+        id={label}
+        type={showPwd ? "text" : "password"}
+        value={value}
+        error={!validation.valid && touched}
+        label={label}
+        onChange={changed}
+        endAdornment={
+          <InputAdornment position="end">
+            <IconButton
+              aria-label="toggle password visibility"
+              onClick={handleClickShowPassword}
+              onMouseDown={handleMouseDownPassword}
+            >
+              {showPwd ? <Visibility /> : <VisibilityOff />}
+            </IconButton>
+          </InputAdornment>
+        }
+      />
+      <FormHelperText>{helperText}</FormHelperText>
+    </FormControl>
+  );
+};
