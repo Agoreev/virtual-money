@@ -1,23 +1,34 @@
-import React from "react";
-import { AppBar, Toolbar, Typography } from "@material-ui/core";
+import React, { useState } from "react";
+import { AppBar, Toolbar, Typography, Hidden } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
+import HomeIcon from "@material-ui/icons/Home";
+import HowToRegIcon from "@material-ui/icons/HowToReg";
+import LockOpenIcon from "@material-ui/icons/LockOpen";
 import Button from "@material-ui/core/Button";
+import { Link } from "react-router-dom";
+import NavigationDrawer from "../../../components/ui/NavigationDrawer/NavigationDrawer";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
-    borderBottom: `1px solid ${theme.palette.divider}`,
+    boxShadow: theme.shadows[6],
+    backgroundColor: theme.palette.common.white,
   },
   toolbar: {
-    flexWrap: "wrap",
+    display: "flex",
+    justifyContent: "space-between",
   },
-  toolbarTitle: {
-    flexGrow: 1,
-    transform: "skew(-10deg)",
+  menuButtonText: {
+    fontSize: theme.typography.body1.fontSize,
+    fontWeight: theme.typography.h6.fontWeight,
   },
-  menuButton: {
-    marginRight: theme.spacing(2),
+  brandText: {
+    fontFamily: "'Baloo Bhaijaan', cursive",
+    fontWeight: 400,
+  },
+  noDecoration: {
+    textDecoration: "none !important",
   },
 }));
 
@@ -32,34 +43,109 @@ const Header: React.FC<IHeaderProps> = ({
 }) => {
   const classes = useStyles();
 
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  const closeMobileDrawer = () => {
+    setIsMobileOpen(false);
+  };
+
+  const showMobileDrawer = () => {
+    setIsMobileOpen(true);
+  };
+
+  const menuItems = [
+    {
+      link: "/",
+      name: "Home",
+      icon: <HomeIcon className="text-white" />,
+    },
+    {
+      name: "Register",
+      onClick: handleOpenRegister,
+      icon: <HowToRegIcon className="text-white" />,
+    },
+    {
+      name: "Login",
+      onClick: handleOpenLogin,
+      icon: <LockOpenIcon className="text-white" />,
+    },
+  ];
+
   return (
     <header className="Header">
-      <AppBar elevation={0}>
+      <AppBar className={classes.appBar}>
         <Toolbar className={classes.toolbar}>
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="menu"
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            variant="h4"
-            noWrap
-            className={classes.toolbarTitle}
-            color="inherit"
-          >
-            Virtual money
-          </Typography>
-          <Button color="inherit" onClick={handleOpenRegister}>
-            Register
-          </Button>
-          <Button color="inherit" onClick={handleOpenLogin}>
-            Login
-          </Button>
+          <div>
+            <Typography
+              variant="h4"
+              display="inline"
+              color="primary"
+              className={classes.brandText}
+            >
+              Virtual
+            </Typography>
+            <Typography
+              variant="h4"
+              display="inline"
+              color="secondary"
+              className={classes.brandText}
+            >
+              Money
+            </Typography>
+          </div>
+          <div>
+            <Hidden mdUp>
+              <IconButton
+                edge="start"
+                onClick={showMobileDrawer}
+                color="primary"
+                aria-label="menu"
+              >
+                <MenuIcon />
+              </IconButton>
+            </Hidden>
+            <Hidden smDown>
+              {menuItems.map((element) => {
+                if (element.link) {
+                  return (
+                    <Link
+                      key={element.name}
+                      to={element.link}
+                      className={classes.noDecoration}
+                      onClick={closeMobileDrawer}
+                    >
+                      <Button
+                        color="secondary"
+                        size="large"
+                        classes={{ text: classes.menuButtonText }}
+                      >
+                        {element.name}
+                      </Button>
+                    </Link>
+                  );
+                }
+                return (
+                  <Button
+                    color="secondary"
+                    size="large"
+                    onClick={element.onClick}
+                    classes={{ text: classes.menuButtonText }}
+                    key={element.name}
+                  >
+                    {element.name}
+                  </Button>
+                );
+              })}
+            </Hidden>
+          </div>
         </Toolbar>
       </AppBar>
+      <NavigationDrawer
+        menuItems={menuItems}
+        anchor="right"
+        open={isMobileOpen}
+        onClose={closeMobileDrawer}
+      />
     </header>
   );
 };
