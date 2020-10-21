@@ -39,7 +39,7 @@ const createTransactionFailed = (
   };
 };
 
-interface ITransactionData {
+export interface ITransactionData {
   name: string;
   amount: number;
 }
@@ -62,7 +62,7 @@ export const createTransaction = (
           }),
           credentials: "include",
           headers: {
-            Authorization: token,
+            Authorization: "Bearer " + token,
             "Content-Type": "application/json",
           },
         }
@@ -121,7 +121,7 @@ export const fetchTransactions = (): ThunkAction<
           method: "GET",
           credentials: "include",
           headers: {
-            Authorization: token,
+            Authorization: "Bearer " + token,
             "Content-Type": "application/json",
           },
         }

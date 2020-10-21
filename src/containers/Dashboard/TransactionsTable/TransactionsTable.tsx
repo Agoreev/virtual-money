@@ -19,7 +19,12 @@ import Paper from "@material-ui/core/Paper";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import FilterListIcon from "@material-ui/icons/FilterList";
+import { CircularProgress, Box, Button } from "@material-ui/core";
+import Icon from "@material-ui/core/Icon";
+import { ThunkAction } from "redux-thunk";
 import { ITransaction } from "../../../store/transactions/types";
+import { ITransactionData } from "../../../store/transactions/actions";
+import { TransactionsState } from "../../../store/transactions/types";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -152,6 +157,15 @@ const EnhancedTableToolbar = () => {
         Transactions
       </Typography>
 
+      <Button
+        variant="contained"
+        color="secondary"
+        size="medium"
+        endIcon={<Icon>send</Icon>}
+      >
+        New transaction
+      </Button>
+
       <Tooltip title="Filter list">
         <IconButton aria-label="filter list">
           <FilterListIcon />
@@ -189,35 +203,57 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default function TransactionsTable() {
+interface ITransactionsTableProps {
+  transactions: ITransaction[];
+  onCreateTransaction: (
+    data: ITransactionData
+  ) => ThunkAction<void, TransactionsState, unknown, any>;
+  loading: boolean;
+  error?: string | null;
+}
+
+const TransactionsTable: React.FC<ITransactionsTableProps> = ({
+  transactions,
+  onCreateTransaction,
+  loading,
+  error,
+}) => {
   const classes = useStyles();
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof ITransaction>("date");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const transactions: ITransaction[] = [
-    {
-      id: 1,
-      username: "Artem",
-      date: "12-12-2020",
-      amount: 35,
-      balance: 55,
-    },
-    {
-      id: 2,
-      username: "Vasya",
-      date: "01-01-2020",
-      amount: 20,
-      balance: 44,
-    },
-    {
-      id: 3,
-      username: "Katya",
-      date: "01-01-2020",
-      amount: 123,
-      balance: 77,
-    },
-  ];
+
+  if (loading) {
+    return (
+      <Box display="flex" mt={3} justifyContent="center">
+        <CircularProgress />
+      </Box>
+    );
+  }
+  // const transactions: ITransaction[] = [
+  //   {
+  //     id: 1,
+  //     username: "Artem",
+  //     date: "12-12-2020",
+  //     amount: 35,
+  //     balance: 55,
+  //   },
+  //   {
+  //     id: 2,
+  //     username: "Vasya",
+  //     date: "01-01-2020",
+  //     amount: 20,
+  //     balance: 44,
+  //   },
+  //   {
+  //     id: 3,
+  //     username: "Katya",
+  //     date: "01-01-2020",
+  //     amount: 123,
+  //     balance: 77,
+  //   },
+  // ];
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -303,4 +339,5 @@ export default function TransactionsTable() {
       </Paper>
     </div>
   );
-}
+};
+export default TransactionsTable;

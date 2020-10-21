@@ -20,6 +20,8 @@ import DashboardIcon from "@material-ui/icons/Dashboard";
 import React, { useState, Fragment } from "react";
 import { NavLink } from "react-router-dom";
 import NavigationDrawer from "../../../components/ui/NavigationDrawer/NavigationDrawer";
+import Balance from "../../../components/Balance/Balance";
+import { IUser } from "../../../store/auth/types";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -119,7 +121,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const NavBar: React.FC = () => {
+interface INavBarProps {
+  user?: IUser | null;
+}
+const NavBar: React.FC<INavBarProps> = ({ user }) => {
   const classes = useStyles();
 
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -187,10 +192,12 @@ const NavBar: React.FC = () => {
           <Box
             display="flex"
             justifyContent="flex-end"
-            align-items="center"
+            alignItems="center"
             width="100%"
           >
-            <Box mr={3}>Balance: 3123</Box>
+            <Box mr={3}>
+              <Balance balance={user!.balance} />
+            </Box>
             <ListItem
               disableGutters
               className={`${classes.iconListItem} ${classes.smBordered}`}
@@ -201,7 +208,9 @@ const NavBar: React.FC = () => {
                 className={classes.accountAvatar}
               />
               <ListItemText
-                primary={<Typography color="textPrimary">Username</Typography>}
+                primary={
+                  <Typography color="textPrimary">{user!.name}</Typography>
+                }
               />
             </ListItem>
           </Box>
