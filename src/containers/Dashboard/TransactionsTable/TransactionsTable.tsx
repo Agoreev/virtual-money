@@ -143,7 +143,12 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const EnhancedTableToolbar = () => {
+interface IEnhancedTableToolbarProps {
+  handleOpenDialog: () => void;
+}
+const EnhancedTableToolbar: React.FC<IEnhancedTableToolbarProps> = ({
+  handleOpenDialog,
+}) => {
   const classes = useToolbarStyles();
 
   return (
@@ -162,15 +167,16 @@ const EnhancedTableToolbar = () => {
         color="secondary"
         size="medium"
         endIcon={<Icon>send</Icon>}
+        onClick={handleOpenDialog}
       >
-        New transaction
+        Create
       </Button>
 
-      <Tooltip title="Filter list">
+      {/* <Tooltip title="Filter list">
         <IconButton aria-label="filter list">
           <FilterListIcon />
         </IconButton>
-      </Tooltip>
+      </Tooltip> */}
     </Toolbar>
   );
 };
@@ -208,6 +214,7 @@ interface ITransactionsTableProps {
   onCreateTransaction: (
     data: ITransactionData
   ) => ThunkAction<void, TransactionsState, unknown, any>;
+  handleOpenDialog: () => void;
   loading: boolean;
   error?: string | null;
 }
@@ -215,6 +222,7 @@ interface ITransactionsTableProps {
 const TransactionsTable: React.FC<ITransactionsTableProps> = ({
   transactions,
   onCreateTransaction,
+  handleOpenDialog,
   loading,
   error,
 }) => {
@@ -284,7 +292,7 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar />
+        <EnhancedTableToolbar handleOpenDialog={handleOpenDialog} />
         <TableContainer>
           <Table
             className={classes.table}

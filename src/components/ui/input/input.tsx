@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -10,7 +10,8 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { IControl } from "../../../interfaces";
 
 interface IInput {
@@ -62,12 +63,14 @@ export const FormInput: React.FC<IInput> = ({ control, changed }) => {
       break;
     case "select":
       inputElement = (
-        <FormControl margin="normal">
-          <InputLabel id={label}>Age</InputLabel>
+        <FormControl margin="normal" fullWidth variant="outlined">
+          <InputLabel id={label}>{label}</InputLabel>
           <Select
             labelId={label}
             id={label}
             error={!validation.valid && touched}
+            autoFocus={elConfig?.autoFocus}
+            label={label}
             fullWidth
             value={value}
             onChange={changed}
@@ -144,5 +147,74 @@ export const PasswordInput: React.FC<IPasswordInput> = ({
       />
       <FormHelperText>{helperText}</FormHelperText>
     </FormControl>
+  );
+};
+
+interface IAsyncAutoComplete {
+  control: IControl;
+  value: any;
+  options: any[];
+  loading: boolean;
+  error: string | null;
+  changed: (event: any, newValue: any) => void;
+  inputChanged: (event: any, newInputValue: string) => void;
+}
+export const AsyncAutocomplete: React.FC<IAsyncAutoComplete> = ({
+  control,
+  value,
+  options,
+  loading,
+  error,
+  changed,
+  inputChanged,
+}) => {
+  const { label, validation, touched, elConfig } = control;
+
+  let helperText: string = "";
+  if (validation && !validation.valid && touched) {
+    helperText = validation.validationErrors![0];
+  }
+  if (error) {
+    helperText = error;
+  }
+
+  return (
+    <Autocomplete
+      id={label}
+      getOptionLabel={(option) => option.name}
+      filterOptions={(x) => x}
+      options={options}
+      loading={loading}
+      autoComplete
+      includeInputInList
+      filterSelectedOptions
+      value={value}
+      onChange={(event: any, newValue: any) => changed(event, newValue)}
+      onInputChange={(event: any, newValue: any) =>
+        inputChanged(event, newValue)
+      }
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label={label}
+          fullWidth
+          variant="outlined"
+          error={!validation.valid && touched}
+          autoFocus={elConfig?.autoFocus}
+          helperText={helperText}
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <React.Fragment>
+                {loading ? (
+                  <CircularProgress color="inherit" size={20} />
+                ) : null}
+                {params.InputProps.endAdornment}
+              </React.Fragment>
+            ),
+          }}
+        />
+      )}
+    />
   );
 };

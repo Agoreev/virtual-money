@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Box,
@@ -17,6 +17,7 @@ import {
 import { getUserInfo } from "../../store/auth/actions";
 import NavBar from "./NavBar/NavBar";
 import TransactionsTable from "./TransactionsTable/TransactionsTable";
+import CreateTransactionDialog from "./CreateTransactionDialog/CreateTransactionDialog";
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -72,6 +73,17 @@ const Dashboard: React.FC<PropsFromRedux> = ({
     onFetchTransactions();
   }, [onFetchTransactions, onGetUserInfo, user]);
 
+  const [openCreateTransaction, setOpenCreateTransaction] = useState<boolean>(
+    false
+  );
+
+  const handleOpenCreateTransaction = () => {
+    setOpenCreateTransaction(true);
+  };
+  const handleCloseCreateTransaction = () => {
+    setOpenCreateTransaction(false);
+  };
+
   if (!localStorage.getItem("token")) {
     return <Redirect to="/" />;
   }
@@ -94,10 +106,16 @@ const Dashboard: React.FC<PropsFromRedux> = ({
               onCreateTransaction={onCreateTransaction}
               loading={transactionsLoading}
               error={transactionsError}
+              handleOpenDialog={handleOpenCreateTransaction}
             />
           </Container>
         </main>
       </Box>
+      <CreateTransactionDialog
+        open={openCreateTransaction}
+        onClose={handleCloseCreateTransaction}
+        title="CREATE TRANSACTION"
+      />
     </div>
   );
 };

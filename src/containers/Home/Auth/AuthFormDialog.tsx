@@ -5,7 +5,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../../store/index";
 import { auth } from "../../../store/auth/actions";
 import {
-  IAuthForm,
+  IForm,
   IValidate,
   elType,
   elConfigType,
@@ -46,7 +46,7 @@ const AuthFormDialog: React.FC<AuthFormDialogProps> = ({
   isLoading,
   error,
 }) => {
-  let state: IAuthForm | null = null;
+  let state: IForm | null = null;
   switch (dialogType) {
     case "login":
       state = {
@@ -143,7 +143,7 @@ const AuthFormDialog: React.FC<AuthFormDialogProps> = ({
       };
       break;
   }
-  const [authFormState, setAuthFormState] = useState<IAuthForm>(state!);
+  const [authFormState, setAuthFormState] = useState<IForm>(state!);
 
   const [showPwd, setShowPwd] = useState<boolean>(false);
 

@@ -3,6 +3,7 @@ export enum elType {
   passwordInput = "passwordInput",
   textarea = "textarea",
   select = "select",
+  asyncAutocomplete = "asyncAutocomplete",
 }
 
 export enum elConfigType {
@@ -43,6 +44,7 @@ export interface IControl {
   elType: elType;
   elConfig?: IElConfig;
   value: string;
+  inputValue?: string;
   validation: IValidate;
   touched: boolean;
   label: string;
@@ -57,7 +59,7 @@ export interface IFormElement {
   config: IControl;
 }
 
-export interface IAuthForm {
+export interface IForm {
   controls: IControls;
   formIsValid: boolean;
 }
@@ -69,7 +71,7 @@ export enum dialogType {
 export interface IDialogProps {
   onClose: () => void;
   open: boolean;
-  dialogType: dialogType;
+  dialogType?: dialogType;
   title: string;
 }
 
