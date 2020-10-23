@@ -1,5 +1,5 @@
 import React, { useState, ReactNode, useEffect } from "react";
-import { Button } from "@material-ui/core";
+import { Button, Box } from "@material-ui/core";
 import { ThunkDispatch } from "redux-thunk";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../../store/index";
@@ -8,7 +8,6 @@ import {
   ITransactionData,
 } from "../../../store/transactions/actions";
 import {
-  IDialogProps,
   IForm,
   elType,
   elConfigType,
@@ -40,12 +39,15 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type CreateTransactionDialogProps = PropsFromRedux & IDialogProps;
-
-interface IUserOption {
-  id: number;
-  name: string;
+interface ICreateTransactionDialogProps {
+  onClose: () => void;
+  open: boolean;
+  title: string;
+  transactionValues?: ITransactionData | null;
 }
+
+type CreateTransactionDialogProps = PropsFromRedux &
+  ICreateTransactionDialogProps;
 
 const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
   open,
@@ -54,11 +56,13 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
   onCreateTransaction,
   isLoading,
   error,
+  transactionValues,
 }) => {
-  const [userValue, setUserValue] = useState<IUserOption | null>(null);
+  const [userValue, setUserValue] = useState<string>("");
   const [userInputValue, setUserInputValue] = useState("");
-  const [userOptions, setUserOptions] = useState<IUserOption[]>([]);
+  const [userOptions, setUserOptions] = useState<string[]>([]);
   const [userLoading, setUserLoading] = useState<boolean>(false);
+  const [userError, setUserError] = useState<string | null>(null);
   const [formState, setFormState] = useState<IForm>({
     controls: {
       name: {
@@ -83,6 +87,7 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
         validation: {
           required: true,
           valid: false,
+          isNumeric: true,
         },
         touched: false,
         label: "Amount",
@@ -92,8 +97,43 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
   });
 
   useEffect(() => {
+    if (transactionValues?.name && transactionValues?.amount) {
+      setUserValue(transactionValues.name);
+      setFormState((prevState) => {
+        const updatedControls = { ...prevState.controls };
+        const updatedName = { ...prevState.controls["name"] };
+        const updatedAmount = { ...prevState.controls["amount"] };
+        updatedName.value = transactionValues.name;
+        updatedAmount.value = (transactionValues.amount * -1).toString();
+        updatedName.validation = checkValidity(
+          updatedName.value,
+          updatedName.validation
+        );
+        updatedAmount.validation = checkValidity(
+          updatedAmount.value,
+          updatedAmount.validation
+        );
+
+        updatedControls["name"] = updatedName;
+        updatedControls["amount"] = updatedAmount;
+
+        let formIsValid = true;
+        for (let inputId in updatedControls) {
+          formIsValid =
+            updatedControls[inputId].validation.valid && formIsValid;
+        }
+        return {
+          controls: updatedControls,
+          formIsValid,
+        };
+      });
+    }
+  }, [transactionValues]);
+
+  useEffect(() => {
     let active = true;
-    setUserLoading(true);
+
+    setUserError(null);
     if (userInputValue === "") {
       setUserOptions(userValue ? [userValue] : []);
       return undefined;
@@ -102,6 +142,7 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
     (async () => {
       const token: string | null = localStorage.getItem("token");
       if (token) {
+        setUserLoading(true);
         const response = await fetch(baseURL + "/api/protected/users/list", {
           method: "POST",
           body: JSON.stringify({
@@ -113,32 +154,66 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
             "Content-Type": "application/json",
           },
         });
-        const options = await response.json();
-
-        if (active) {
-          let newOptions = [] as IUserOption[];
-
-          if (userValue) {
-            newOptions = [userValue];
+        if (!response.ok) {
+          const err = await response.text();
+          setUserError(err);
+        } else {
+          interface IOption {
+            id: number;
+            name: string;
           }
-          if (options) {
-            newOptions = [...newOptions, ...options];
+          const options: IOption[] = await response.json();
+
+          if (active) {
+            let newOptions = [] as string[];
+
+            if (userValue) {
+              newOptions = [userValue];
+            }
+            if (options.length > 0) {
+              const optionStrings = options.map(
+                (option: IOption) => option.name
+              );
+              newOptions = [...newOptions, ...optionStrings];
+            }
+            setUserOptions(newOptions);
           }
-          setUserOptions(newOptions);
         }
+        setUserLoading(false);
       }
     })();
 
     return () => {
-      setUserLoading(false);
       active = false;
     };
   }, [userValue, userInputValue]);
 
-  const onUserChange = (event: any, newValue: IUserOption | null) => {
-    inputChangedHandler(event, "name");
+  const onUserChange = (event: any, newValue: string) => {
     setUserOptions(newValue ? [newValue, ...userOptions] : userOptions);
     setUserValue(newValue);
+    const controlName: string = "name";
+
+    //For user autocomplete input inputChangedHandler implemented here because it's value revcieved not from event
+    const updatedControls = {
+      ...formState.controls,
+      [controlName]: {
+        ...formState.controls["name"],
+        value: newValue,
+        validation: checkValidity(
+          newValue,
+          formState.controls["name"].validation
+        ),
+        touched: true,
+      },
+    };
+    let formIsValid = true;
+    for (let inputId in updatedControls) {
+      formIsValid = updatedControls[inputId].validation.valid && formIsValid;
+    }
+    setFormState({
+      controls: updatedControls,
+      formIsValid: formIsValid,
+    });
   };
 
   const onUserInputChange = (event: any, newInputValue: string) => {
@@ -152,6 +227,14 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
     if (rules.required && value.trim() === "") {
       valid = false;
       validationErrors.push("Field is required");
+    }
+
+    if (rules.isNumeric) {
+      const pattern = /^\d+$/;
+      if (!pattern.test(value) && parseInt(value) <= 0) {
+        valid = false;
+        validationErrors.push("Enter positive numeric value");
+      }
     }
 
     return { ...validation, valid, validationErrors };
@@ -192,6 +275,8 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
         amount: parseInt(amount.value),
       };
       onCreateTransaction(transactionData);
+      onClose();
+      //TODO Notification here
     }
   };
 
@@ -202,28 +287,36 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
       config: formState.controls[key],
     });
   }
-  const formContent = formElementsArray.map((formElement) => {
-    if (formElement.config.elType === elType.asyncAutocomplete) {
-      return (
-        <AsyncAutocomplete
-          control={formElement.config}
-          changed={onUserChange}
-          inputChanged={onUserInputChange}
-          value={userValue}
-          options={userOptions}
-          loading={userLoading}
-        />
-      );
-    } else {
-      return (
-        <FormInput
-          key={formElement.id}
-          changed={(event: any) => inputChangedHandler(event, formElement.id)}
-          control={formElement.config}
-        />
-      );
-    }
-  });
+  const formContent = (
+    <Box mt={2}>
+      {formElementsArray.map((formElement) => {
+        if (formElement.config.elType === elType.asyncAutocomplete) {
+          return (
+            <AsyncAutocomplete
+              key={formElement.id}
+              control={formElement.config}
+              changed={onUserChange}
+              inputChanged={onUserInputChange}
+              value={userValue}
+              options={userOptions}
+              loading={userLoading}
+              error={userError}
+            />
+          );
+        } else {
+          return (
+            <FormInput
+              key={formElement.id}
+              changed={(event: any) =>
+                inputChangedHandler(event, formElement.id)
+              }
+              control={formElement.config}
+            />
+          );
+        }
+      })}
+    </Box>
+  );
 
   const errorsInfo = error ? (
     <HighlitedInformation>{error}</HighlitedInformation>

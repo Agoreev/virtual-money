@@ -5,6 +5,7 @@ import GlobalStyles from "../../globalStyles";
 import theme from "../../theme";
 import Home from "../Home/Home";
 import Dashboard from "../Dashboard/Dashboard";
+import Logout from "../Logout/Logout";
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
           <Switch>
             <Route path="/" component={Home} exact />
             <Route path="/dashboard" component={Dashboard} />
-            <Route path="/logout" />
+            <Route path="/logout" component={Logout} />
             <Route render={() => <h2>Page not found</h2>} />
           </Switch>
         </Router>

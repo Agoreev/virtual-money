@@ -77,7 +77,17 @@ const Dashboard: React.FC<PropsFromRedux> = ({
     false
   );
 
-  const handleOpenCreateTransaction = () => {
+  const [transactionValues, setTransactionValues] = useState<ITransactionData>({
+    name: "",
+    amount: 0,
+  });
+
+  const handleOpenCreateTransaction = (
+    transactionData?: ITransactionData | null
+  ) => {
+    if (transactionData) {
+      setTransactionValues(transactionData);
+    }
     setOpenCreateTransaction(true);
   };
   const handleCloseCreateTransaction = () => {
@@ -115,6 +125,7 @@ const Dashboard: React.FC<PropsFromRedux> = ({
         open={openCreateTransaction}
         onClose={handleCloseCreateTransaction}
         title="CREATE TRANSACTION"
+        transactionValues={transactionValues}
       />
     </div>
   );

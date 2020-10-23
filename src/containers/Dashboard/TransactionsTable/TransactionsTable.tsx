@@ -144,7 +144,7 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
 );
 
 interface IEnhancedTableToolbarProps {
-  handleOpenDialog: () => void;
+  handleOpenDialog: (data?: ITransactionData | null) => void;
 }
 const EnhancedTableToolbar: React.FC<IEnhancedTableToolbarProps> = ({
   handleOpenDialog,
@@ -167,7 +167,7 @@ const EnhancedTableToolbar: React.FC<IEnhancedTableToolbarProps> = ({
         color="secondary"
         size="medium"
         endIcon={<Icon>send</Icon>}
-        onClick={handleOpenDialog}
+        onClick={() => handleOpenDialog()}
       >
         Create
       </Button>
@@ -214,7 +214,7 @@ interface ITransactionsTableProps {
   onCreateTransaction: (
     data: ITransactionData
   ) => ThunkAction<void, TransactionsState, unknown, any>;
-  handleOpenDialog: () => void;
+  handleOpenDialog: (data?: ITransactionData | null) => void;
   loading: boolean;
   error?: string | null;
 }
@@ -239,29 +239,6 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
       </Box>
     );
   }
-  // const transactions: ITransaction[] = [
-  //   {
-  //     id: 1,
-  //     username: "Artem",
-  //     date: "12-12-2020",
-  //     amount: 35,
-  //     balance: 55,
-  //   },
-  //   {
-  //     id: 2,
-  //     username: "Vasya",
-  //     date: "01-01-2020",
-  //     amount: 20,
-  //     balance: 44,
-  //   },
-  //   {
-  //     id: 3,
-  //     username: "Katya",
-  //     date: "01-01-2020",
-  //     amount: 123,
-  //     balance: 77,
-  //   },
-  // ];
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -272,7 +249,9 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
     setOrderBy(property);
   };
 
-  const handleClick = (event: React.MouseEvent<unknown>, id: number) => {};
+  const handleClick = (event: React.MouseEvent<unknown>, row: ITransaction) => {
+    handleOpenDialog({ name: row.username, amount: row.amount });
+  };
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -313,7 +292,7 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.id)}
+                      onClick={(event) => handleClick(event, row)}
                       role="button"
                       tabIndex={-1}
                       key={row.id}

@@ -188,6 +188,7 @@ export const AsyncAutocomplete: React.FC<IAsyncAutoComplete> = ({
       autoComplete
       includeInputInList
       filterSelectedOptions
+      noOptionsText="Enter name"
       value={value}
       onChange={(event: any, newValue: any) => changed(event, newValue)}
       onInputChange={(event: any, newValue: any) =>
