@@ -11,6 +11,7 @@ import {
   FETCH_TRANSACTIONS_START,
   FETCH_TRANSACTIONS_SUCCESS,
   FETCH_TRANSACTIONS_FAILED,
+  CREATE_TRANSACTION_ERROR_CLEAR,
 } from "./types";
 import { logout } from "../auth/actions";
 import { baseURL } from "../../api/api";
@@ -36,6 +37,12 @@ const createTransactionFailed = (
   return {
     type: CREATE_TRANSACTION_FAILED,
     payload: error,
+  };
+};
+
+export const createTransactionErrorClear = (): createTransactionActionTypes => {
+  return {
+    type: CREATE_TRANSACTION_ERROR_CLEAR,
   };
 };
 

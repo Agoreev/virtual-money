@@ -6,6 +6,7 @@ import { RootState } from "../../../store/index";
 import {
   createTransaction,
   ITransactionData,
+  createTransactionErrorClear,
 } from "../../../store/transactions/actions";
 import {
   IForm,
@@ -27,6 +28,8 @@ const mapDispatchToProps = (dispatch: ThunkDispatch<RootState, any, any>) => {
   return {
     onCreateTransaction: (transactionData: ITransactionData) =>
       dispatch(createTransaction(transactionData)),
+    onCreateTransactionErrorClear: () =>
+      dispatch(createTransactionErrorClear()),
   };
 };
 
@@ -54,16 +57,17 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
   onClose,
   title,
   onCreateTransaction,
+  onCreateTransactionErrorClear,
   isLoading,
   error,
   transactionValues,
 }) => {
-  const [userValue, setUserValue] = useState<string>("");
+  const [userValue, setUserValue] = useState<string | null>(null);
   const [userInputValue, setUserInputValue] = useState("");
   const [userOptions, setUserOptions] = useState<string[]>([]);
   const [userLoading, setUserLoading] = useState<boolean>(false);
   const [userError, setUserError] = useState<string | null>(null);
-  const [formState, setFormState] = useState<IForm>({
+  const initialFormState: IForm = {
     controls: {
       name: {
         elType: elType.asyncAutocomplete,
@@ -94,8 +98,12 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
       },
     },
     formIsValid: false,
+  };
+  const [formState, setFormState] = useState<IForm>({
+    ...initialFormState,
   });
 
+  // Set initial values in form if it is repeated transaction
   useEffect(() => {
     if (transactionValues?.name && transactionValues?.amount) {
       setUserValue(transactionValues.name);
@@ -130,6 +138,7 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
     }
   }, [transactionValues]);
 
+  // Fetch users from API on autocomplete input change
   useEffect(() => {
     let active = true;
 
@@ -167,14 +176,11 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
           if (active) {
             let newOptions = [] as string[];
 
-            if (userValue) {
-              newOptions = [userValue];
-            }
             if (options.length > 0) {
               const optionStrings = options.map(
                 (option: IOption) => option.name
               );
-              newOptions = [...newOptions, ...optionStrings];
+              newOptions = [...optionStrings];
             }
             setUserOptions(newOptions);
           }
@@ -188,19 +194,31 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
     };
   }, [userValue, userInputValue]);
 
+  // Cleans dialog form on dialog exit
+  const onDialogExited = () => {
+    setFormState({ ...initialFormState });
+    setUserValue(null);
+    setUserInputValue("");
+    setUserOptions([]);
+    setUserLoading(false);
+    setUserError(null);
+    onCreateTransactionErrorClear();
+  };
+
   const onUserChange = (event: any, newValue: string) => {
-    setUserOptions(newValue ? [newValue, ...userOptions] : userOptions);
-    setUserValue(newValue);
+    const newName = newValue ?? "";
+    setUserOptions(newName ? [newName, ...userOptions] : userOptions);
+    setUserValue(newName);
     const controlName: string = "name";
 
-    //For user autocomplete input inputChangedHandler implemented here because it's value revcieved not from event
+    // For user autocomplete input inputChangedHandler implemented here because it's value recieved not from event
     const updatedControls = {
       ...formState.controls,
       [controlName]: {
         ...formState.controls["name"],
-        value: newValue,
+        value: newName,
         validation: checkValidity(
-          newValue,
+          newName,
           formState.controls["name"].validation
         ),
         touched: true,
@@ -219,6 +237,7 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
   const onUserInputChange = (event: any, newInputValue: string) => {
     setUserInputValue(newInputValue);
   };
+
   const checkValidity = (value: string, validation: IValidate) => {
     let { valid, validationErrors, ...rules } = { ...validation };
     valid = true;
@@ -341,6 +360,7 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
       info={errorsInfo}
       title={title}
       onClose={onClose}
+      onExited={onDialogExited}
       onSubmit={submitHandler}
       open={open}
       loading={isLoading}

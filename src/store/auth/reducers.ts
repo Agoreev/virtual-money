@@ -5,6 +5,7 @@ import {
   LOGOUT,
   AUTH_SUCCESS,
   authActionTypes,
+  AUTH_ERROR_CLEAR,
 } from "./types";
 
 const initialState: UserState = {
@@ -33,6 +34,11 @@ const reducer = (state = initialState, action: authActionTypes): UserState => {
         ...state,
         loading: false,
         error: action.payload,
+      };
+    case AUTH_ERROR_CLEAR:
+      return {
+        ...state,
+        error: null,
       };
     case LOGOUT:
       return {

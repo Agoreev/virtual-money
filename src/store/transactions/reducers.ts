@@ -8,6 +8,7 @@ import {
   FETCH_TRANSACTIONS_START,
   FETCH_TRANSACTIONS_SUCCESS,
   FETCH_TRANSACTIONS_FAILED,
+  CREATE_TRANSACTION_ERROR_CLEAR,
 } from "./types";
 
 const initialState: TransactionsState = {
@@ -39,6 +40,11 @@ const reducer = (
         ...state,
         loading: false,
         error: action.payload,
+      };
+    case CREATE_TRANSACTION_ERROR_CLEAR:
+      return {
+        ...state,
+        error: null,
       };
     case FETCH_TRANSACTIONS_START:
       return {

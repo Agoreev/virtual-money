@@ -15,6 +15,7 @@ export interface IUser {
 export const AUTH_START = "AUTH_START";
 export const AUTH_SUCCESS = "AUTH_SUCCESS";
 export const AUTH_FAILED = "AUTH_FAILED";
+export const AUTH_ERROR_CLEAR = "AUTH_ERROR_CLEAR";
 export const LOGOUT = "LOGOUT";
 
 interface authStartAction {
@@ -31,6 +32,10 @@ interface authFailedAction {
   payload: string;
 }
 
+interface authErrorClear {
+  type: typeof AUTH_ERROR_CLEAR;
+}
+
 interface logoutAction {
   type: typeof LOGOUT;
 }
@@ -39,4 +44,5 @@ export type authActionTypes =
   | authStartAction
   | authSuccessAction
   | authFailedAction
+  | authErrorClear
   | logoutAction;

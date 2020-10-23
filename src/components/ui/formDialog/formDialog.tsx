@@ -30,6 +30,7 @@ const useStules = makeStyles((theme) => ({
 interface IFormDialogProps {
   open: boolean;
   onClose: () => void;
+  onExited: () => void;
   title: string;
   content: ReactNode;
   info?: ReactNode | null;
@@ -41,6 +42,7 @@ interface IFormDialogProps {
 const FormDialog: React.FC<IFormDialogProps> = ({
   open,
   onClose,
+  onExited,
   title,
   content,
   info,
@@ -53,6 +55,7 @@ const FormDialog: React.FC<IFormDialogProps> = ({
     <Dialog
       open={open}
       onClose={onClose}
+      onExited={onExited}
       aria-labelledby="form-dialog-title"
       classes={{ paper: classes.dialogPaper }}
       disableBackdropClick={loading}

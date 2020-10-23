@@ -13,7 +13,7 @@ const ButtonCircularProgress: React.FC = () => {
   return (
     <Box color="secondary.main" pl={1.5} display="flex">
       <CircularProgress
-        size="24"
+        size={24}
         thickness={5}
         className={classes.circularProgress}
       />

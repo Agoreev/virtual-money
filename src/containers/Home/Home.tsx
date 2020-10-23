@@ -50,7 +50,8 @@ const Home: React.FC<PropsFromRedux> = ({
     setOpenRegister(false);
   };
 
-  if (userLoading) {
+  const token: string | null = localStorage.getItem("token");
+  if (userLoading && token) {
     return (
       <Box display="flex" mt={3} justifyContent="center">
         <CircularProgress />

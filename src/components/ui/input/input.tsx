@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -181,13 +181,12 @@ export const AsyncAutocomplete: React.FC<IAsyncAutoComplete> = ({
   return (
     <Autocomplete
       id={label}
-      getOptionLabel={(option) => option.name}
+      getOptionLabel={(option) => option}
       filterOptions={(x) => x}
       options={options}
       loading={loading}
       autoComplete
       includeInputInList
-      filterSelectedOptions
       noOptionsText="Enter name"
       value={value}
       onChange={(event: any, newValue: any) => changed(event, newValue)}

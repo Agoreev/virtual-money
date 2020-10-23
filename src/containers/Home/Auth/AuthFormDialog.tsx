@@ -3,7 +3,7 @@ import { Button } from "@material-ui/core";
 import { ThunkDispatch } from "redux-thunk";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../../store/index";
-import { auth } from "../../../store/auth/actions";
+import { auth, authErrorClear } from "../../../store/auth/actions";
 import {
   IForm,
   IValidate,
@@ -12,7 +12,6 @@ import {
   IFormElement,
   IDialogProps,
   IAuthData,
-  IControls,
 } from "../../../interfaces";
 import ButtonCircularProgress from "../../../components/ui/ButtonCircularProgress/ButtonCircularProgress";
 import HighlitedInformation from "../../../components/ui/HighlitedInformation/HighlightedInformation";
@@ -23,6 +22,7 @@ const mapDispatchToProps = (dispatch: ThunkDispatch<RootState, any, any>) => {
   return {
     onAuth: (authData: IAuthData, isSignUp: boolean) =>
       dispatch(auth(authData, isSignUp)),
+    onAuthErrorClear: () => dispatch(authErrorClear()),
   };
 };
 
@@ -43,103 +43,110 @@ const AuthFormDialog: React.FC<AuthFormDialogProps> = ({
   dialogType,
   title,
   onAuth,
+  onAuthErrorClear,
   isLoading,
   error,
 }) => {
   let state: IForm | null = null;
+  const initialLoginState: IForm = {
+    controls: {
+      email: {
+        elType: elType.input,
+        elConfig: {
+          type: elConfigType.email,
+          autoFocus: true,
+        },
+        value: "",
+        validation: {
+          required: true,
+          isEmail: true,
+          valid: false,
+        },
+        touched: false,
+        label: "E-mail",
+      },
+      password: {
+        elType: elType.passwordInput,
+        value: "",
+        validation: {
+          required: true,
+          valid: false,
+        },
+        touched: false,
+        label: "Password",
+      },
+    },
+    formIsValid: false,
+  };
+  const initialRegisterState: IForm = {
+    controls: {
+      email: {
+        elType: elType.input,
+        elConfig: {
+          type: elConfigType.email,
+          autoFocus: true,
+        },
+        value: "",
+        validation: {
+          required: true,
+          isEmail: true,
+          valid: false,
+        },
+        touched: false,
+        label: "E-mail",
+      },
+      name: {
+        elType: elType.input,
+        elConfig: {
+          type: elConfigType.text,
+        },
+        value: "",
+        validation: {
+          required: true,
+          valid: false,
+        },
+        touched: false,
+        label: "Name",
+      },
+      password: {
+        elType: elType.passwordInput,
+        value: "",
+        validation: {
+          required: true,
+          minLength: 6,
+          valid: false,
+        },
+        touched: false,
+        label: "Password",
+      },
+      repeatPassword: {
+        elType: elType.passwordInput,
+        elConfig: {
+          type: elConfigType.password,
+          placeholder: "Repeat password",
+        },
+        value: "",
+        validation: {
+          required: true,
+          minLength: 6,
+          valid: false,
+          passwordRepeat: true,
+        },
+        touched: false,
+        label: "Repeat password",
+      },
+    },
+    formIsValid: false,
+  };
   switch (dialogType) {
     case "login":
       state = {
-        controls: {
-          email: {
-            elType: elType.input,
-            elConfig: {
-              type: elConfigType.email,
-              autoFocus: true,
-            },
-            value: "",
-            validation: {
-              required: true,
-              isEmail: true,
-              valid: false,
-            },
-            touched: false,
-            label: "E-mail",
-          },
-          password: {
-            elType: elType.passwordInput,
-            value: "",
-            validation: {
-              required: true,
-              valid: false,
-            },
-            touched: false,
-            label: "Password",
-          },
-        },
-        formIsValid: false,
+        ...initialLoginState,
       };
       break;
     case "register":
       state = {
-        controls: {
-          email: {
-            elType: elType.input,
-            elConfig: {
-              type: elConfigType.email,
-              autoFocus: true,
-            },
-            value: "",
-            validation: {
-              required: true,
-              isEmail: true,
-              valid: false,
-            },
-            touched: false,
-            label: "E-mail",
-          },
-          name: {
-            elType: elType.input,
-            elConfig: {
-              type: elConfigType.text,
-            },
-            value: "",
-            validation: {
-              required: true,
-              valid: false,
-            },
-            touched: false,
-            label: "Name",
-          },
-          password: {
-            elType: elType.passwordInput,
-            value: "",
-            validation: {
-              required: true,
-              minLength: 6,
-              valid: false,
-            },
-            touched: false,
-            label: "Password",
-          },
-          repeatPassword: {
-            elType: elType.passwordInput,
-            elConfig: {
-              type: elConfigType.password,
-              placeholder: "Repeat password",
-            },
-            value: "",
-            validation: {
-              required: true,
-              minLength: 6,
-              valid: false,
-              passwordRepeat: true,
-            },
-            touched: false,
-            label: "Repeat password",
-          },
-        },
-        formIsValid: false,
+        ...initialRegisterState,
       };
       break;
   }
@@ -155,6 +162,20 @@ const AuthFormDialog: React.FC<AuthFormDialogProps> = ({
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
     event.preventDefault();
+  };
+
+  // Cleans dialog form on dialog exit
+  const onDialogExited = () => {
+    switch (dialogType) {
+      case "login":
+        setAuthFormState({ ...initialLoginState });
+        break;
+      case "register":
+        setAuthFormState({ ...initialRegisterState });
+        break;
+    }
+    onAuthErrorClear();
+    setShowPwd(false);
   };
 
   const checkValidity = (value: string, validation: IValidate) => {
@@ -217,26 +238,6 @@ const AuthFormDialog: React.FC<AuthFormDialogProps> = ({
     });
   };
 
-  const checkFormValidity = () => {
-    const { controls } = authFormState;
-    const checkedControls: IControls = {};
-    let formIsValid: boolean = true;
-    Object.keys(controls).forEach((inputId) => {
-      checkedControls[inputId] = {
-        ...controls[inputId],
-        validation: checkValidity(
-          controls[inputId].value,
-          controls[inputId].validation
-        ),
-      };
-      formIsValid = checkedControls[inputId].validation.valid && formIsValid;
-    });
-    setAuthFormState({
-      controls: checkedControls,
-      formIsValid,
-    });
-  };
-
   const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (authFormState.formIsValid) {
@@ -293,9 +294,10 @@ const AuthFormDialog: React.FC<AuthFormDialogProps> = ({
     }
   });
 
-  const errorsInfo = error ? (
-    <HighlitedInformation>{error}</HighlitedInformation>
-  ) : null;
+  const errorsInfo =
+    error && error !== "UnauthorizedError: jwt expired\n" ? (
+      <HighlitedInformation>{error}</HighlitedInformation>
+    ) : null;
   const formActions: ReactNode = (
     <Button
       type="submit"
@@ -316,6 +318,7 @@ const AuthFormDialog: React.FC<AuthFormDialogProps> = ({
       info={errorsInfo}
       title={title}
       onClose={onClose}
+      onExited={onDialogExited}
       onSubmit={submitHandler}
       open={open}
       loading={isLoading}

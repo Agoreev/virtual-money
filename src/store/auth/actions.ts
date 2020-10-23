@@ -7,6 +7,7 @@ import {
   LOGOUT,
   AUTH_SUCCESS,
   authActionTypes,
+  AUTH_ERROR_CLEAR,
 } from "./types";
 import { IAuthData } from "../../interfaces";
 import { Action } from "redux";
@@ -18,17 +19,23 @@ const authStart = (): authActionTypes => {
   };
 };
 
-const authSuccess = (user: IUser) => {
+const authSuccess = (user: IUser): authActionTypes => {
   return {
     type: AUTH_SUCCESS,
     payload: user,
   };
 };
 
-const authFailed = (error: string) => {
+const authFailed = (error: string): authActionTypes => {
   return {
     type: AUTH_FAILED,
     payload: error,
+  };
+};
+
+export const authErrorClear = (): authActionTypes => {
+  return {
+    type: AUTH_ERROR_CLEAR,
   };
 };
 
