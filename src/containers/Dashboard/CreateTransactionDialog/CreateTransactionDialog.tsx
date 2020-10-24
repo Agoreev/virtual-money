@@ -15,13 +15,11 @@ import {
   IFormElement,
   IValidate,
 } from "../../../interfaces";
-import ButtonCircularProgress from "../../../components/ui/ButtonCircularProgress/ButtonCircularProgress";
-import HighlitedInformation from "../../../components/ui/HighlitedInformation/HighlightedInformation";
-import {
-  FormInput,
-  AsyncAutocomplete,
-} from "../../../components/ui/input/input";
-import FormDialog from "../../../components/ui/formDialog/formDialog";
+import ButtonCircularProgress from "../../../components/ui/ButtonCircularProgress";
+import HighlitedInformation from "../../../components/ui/HighlightedInformation";
+import { FormInput, AsyncAutocomplete } from "../../../components/ui/Input";
+import FormDialog from "../../../components/ui/FormDialog";
+import Notification from "../../../components/ui/Notification";
 import { baseURL } from "../../../api/api";
 
 const mapDispatchToProps = (dispatch: ThunkDispatch<RootState, any, any>) => {
@@ -67,6 +65,7 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
   const [userOptions, setUserOptions] = useState<string[]>([]);
   const [userLoading, setUserLoading] = useState<boolean>(false);
   const [userError, setUserError] = useState<string | null>(null);
+  const [openNotification, setOpenNotification] = useState<boolean>(false);
   const initialFormState: IForm = {
     controls: {
       name: {
@@ -205,6 +204,17 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
     onCreateTransactionErrorClear();
   };
 
+  const handleNotificationClose = (
+    event: React.SyntheticEvent | React.MouseEvent,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenNotification(false);
+  };
+
   const onUserChange = (event: any, newValue: string) => {
     const newName = newValue ?? "";
     setUserOptions(newName ? [newName, ...userOptions] : userOptions);
@@ -294,8 +304,8 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
         amount: parseInt(amount.value),
       };
       onCreateTransaction(transactionData);
+      setOpenNotification(true);
       onClose();
-      //TODO Notification here
     }
   };
 
@@ -354,17 +364,25 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
     </Button>
   );
   return (
-    <FormDialog
-      actions={formActions}
-      content={formContent}
-      info={errorsInfo}
-      title={title}
-      onClose={onClose}
-      onExited={onDialogExited}
-      onSubmit={submitHandler}
-      open={open}
-      loading={isLoading}
-    />
+    <>
+      <FormDialog
+        actions={formActions}
+        content={formContent}
+        info={errorsInfo}
+        title={title}
+        onClose={onClose}
+        onExited={onDialogExited}
+        onSubmit={submitHandler}
+        open={open}
+        loading={isLoading}
+      />
+      <Notification
+        message="Transaction sent"
+        onClose={handleNotificationClose}
+        severity="success"
+        open={openNotification}
+      />
+    </>
   );
 };
 

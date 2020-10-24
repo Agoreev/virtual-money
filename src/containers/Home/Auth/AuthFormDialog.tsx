@@ -13,10 +13,10 @@ import {
   IDialogProps,
   IAuthData,
 } from "../../../interfaces";
-import ButtonCircularProgress from "../../../components/ui/ButtonCircularProgress/ButtonCircularProgress";
-import HighlitedInformation from "../../../components/ui/HighlitedInformation/HighlightedInformation";
-import { FormInput, PasswordInput } from "../../../components/ui/input/input";
-import FormDialog from "../../../components/ui/formDialog/formDialog";
+import ButtonCircularProgress from "../../../components/ui/ButtonCircularProgress";
+import HighlitedInformation from "../../../components/ui/HighlightedInformation";
+import { FormInput, PasswordInput } from "../../../components/ui/Input";
+import FormDialog from "../../../components/ui/FormDialog";
 
 const mapDispatchToProps = (dispatch: ThunkDispatch<RootState, any, any>) => {
   return {

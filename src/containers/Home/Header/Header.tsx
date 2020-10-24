@@ -8,7 +8,7 @@ import HowToRegIcon from "@material-ui/icons/HowToReg";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import Button from "@material-ui/core/Button";
 import { Link } from "react-router-dom";
-import NavigationDrawer from "../../../components/ui/NavigationDrawer/NavigationDrawer";
+import NavigationDrawer from "../../../components/ui/NavigationDrawer";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {

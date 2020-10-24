@@ -12,7 +12,7 @@ import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { IControl } from "../../../interfaces";
+import { IControl } from "../../interfaces";
 
 interface IInput {
   control: IControl;

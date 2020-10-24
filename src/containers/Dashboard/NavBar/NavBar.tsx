@@ -19,7 +19,7 @@ import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import React, { useState, Fragment } from "react";
 import { NavLink } from "react-router-dom";
-import NavigationDrawer from "../../../components/ui/NavigationDrawer/NavigationDrawer";
+import NavigationDrawer from "../../../components/ui/NavigationDrawer";
 import Balance from "../../../components/Balance/Balance";
 import { IUser } from "../../../store/auth/types";
 
