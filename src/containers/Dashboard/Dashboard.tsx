@@ -113,7 +113,6 @@ const Dashboard: React.FC<PropsFromRedux> = ({
           <Container maxWidth="md">
             <TransactionsTable
               transactions={transactions}
-              onCreateTransaction={onCreateTransaction}
               loading={transactionsLoading}
               error={transactionsError}
               handleOpenDialog={handleOpenCreateTransaction}

@@ -12,6 +12,12 @@ const styles = () => ({
     ".text-white": {
       color: "white",
     },
+    ".text-green": {
+      color: "#4CAF50",
+    },
+    ".text-red": {
+      color: "#F44336",
+    },
   },
 });
 

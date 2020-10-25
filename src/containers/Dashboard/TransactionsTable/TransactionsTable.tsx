@@ -16,12 +16,12 @@ import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import { CircularProgress, Box, Button } from "@material-ui/core";
+import { CircularProgress, Box, Button, Tooltip } from "@material-ui/core";
 import Icon from "@material-ui/core/Icon";
-import { ThunkAction } from "redux-thunk";
+import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
+import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import { ITransaction } from "../../../store/transactions/types";
 import { ITransactionData } from "../../../store/transactions/actions";
-import { TransactionsState } from "../../../store/transactions/types";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -92,10 +92,10 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead>
       <TableRow>
+        <TableCell>Type</TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
             padding={headCell.disablePadding ? "none" : "default"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -208,9 +208,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface ITransactionsTableProps {
   transactions: ITransaction[];
-  onCreateTransaction: (
-    data: ITransactionData
-  ) => ThunkAction<void, TransactionsState, unknown, any>;
   handleOpenDialog: (data?: ITransactionData | null) => void;
   loading: boolean;
   error?: string | null;
@@ -218,7 +215,6 @@ interface ITransactionsTableProps {
 
 const TransactionsTable: React.FC<ITransactionsTableProps> = ({
   transactions,
-  onCreateTransaction,
   handleOpenDialog,
   loading,
   error,
@@ -294,12 +290,23 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
                       tabIndex={-1}
                       key={row.id}
                     >
+                      <TableCell>
+                        {row.amount > 0 ? (
+                          <Tooltip title="Credit">
+                            <ArrowUpwardIcon className="text-green" />
+                          </Tooltip>
+                        ) : (
+                          <Tooltip title="Debet">
+                            <ArrowDownwardIcon className="text-red" />
+                          </Tooltip>
+                        )}
+                      </TableCell>
                       <TableCell component="th" scope="row" padding="none">
                         {row.date}
                       </TableCell>
-                      <TableCell align="right">{row.username}</TableCell>
-                      <TableCell align="right">{row.amount}</TableCell>
-                      <TableCell align="right">{row.balance}</TableCell>
+                      <TableCell>{row.username}</TableCell>
+                      <TableCell>{row.amount}</TableCell>
+                      <TableCell>{row.balance}</TableCell>
                     </TableRow>
                   );
                 })}
