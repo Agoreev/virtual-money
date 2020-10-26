@@ -16,8 +16,15 @@ import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import { CircularProgress, Box, Button, Tooltip } from "@material-ui/core";
+import {
+  CircularProgress,
+  Box,
+  Button,
+  Tooltip,
+  IconButton,
+} from "@material-ui/core";
 import Icon from "@material-ui/core/Icon";
+import ReplayIcon from "@material-ui/icons/Replay";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import { ITransaction } from "../../../store/transactions/types";
@@ -66,7 +73,7 @@ interface HeadCell {
 
 const headCells: HeadCell[] = [
   { id: "date", numeric: false, disablePadding: true, label: "Date" },
-  { id: "username", numeric: true, disablePadding: false, label: "User name" },
+  { id: "username", numeric: false, disablePadding: false, label: "User name" },
   { id: "amount", numeric: true, disablePadding: false, label: "Amount" },
   { id: "balance", numeric: true, disablePadding: false, label: "Balance" },
 ];
@@ -92,11 +99,12 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell>Type</TableCell>
+        <TableCell align="left">Type</TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
             padding={headCell.disablePadding ? "none" : "default"}
+            align={headCell.numeric ? "right" : "left"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
@@ -113,6 +121,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             </TableSortLabel>
           </TableCell>
         ))}
+        <TableCell align="right">Repeat</TableCell>
       </TableRow>
     </TableHead>
   );
@@ -283,13 +292,7 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row: ITransaction, index) => {
                   return (
-                    <TableRow
-                      hover
-                      onClick={(event) => handleClick(event, row)}
-                      role="button"
-                      tabIndex={-1}
-                      key={row.id}
-                    >
+                    <TableRow hover role="button" tabIndex={-1} key={row.id}>
                       <TableCell>
                         {row.amount > 0 ? (
                           <Tooltip title="Credit">
@@ -305,8 +308,20 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
                         {row.date}
                       </TableCell>
                       <TableCell>{row.username}</TableCell>
-                      <TableCell>{row.amount}</TableCell>
-                      <TableCell>{row.balance}</TableCell>
+                      <TableCell align="right">{row.amount}</TableCell>
+                      <TableCell align="right">{row.balance}</TableCell>
+                      <TableCell align="right">
+                        {row.amount < 0 ? (
+                          <Tooltip title="Repeat">
+                            <IconButton
+                              color="primary"
+                              onClick={(event) => handleClick(event, row)}
+                            >
+                              <ReplayIcon />
+                            </IconButton>
+                          </Tooltip>
+                        ) : null}
+                      </TableCell>
                     </TableRow>
                   );
                 })}
