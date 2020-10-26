@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  createStyles,
-  lighten,
-  makeStyles,
-  Theme,
-} from "@material-ui/core/styles";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Button,
   Typography,
@@ -16,6 +11,7 @@ import {
 import Icon from "@material-ui/core/Icon";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import { ITransactionData } from "../../../store/transactions/actions";
+import TypeSwitch from "./TypeSwitch";
 
 const useToolbarStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,10 +28,14 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
 interface ITransactionsToolbarProps {
   handleOpenDialog: (data?: ITransactionData | null) => void;
   refreshTransactions: () => void;
+  filterType: { debet: boolean; credit: boolean };
+  handleFilterTypeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
   handleOpenDialog,
   refreshTransactions,
+  filterType,
+  handleFilterTypeChange,
 }) => {
   const classes = useToolbarStyles();
 
@@ -50,6 +50,7 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
         </IconButton>
       </Tooltip>
       <Box className={classes.actions}>
+        <TypeSwitch type={filterType} handleChange={handleFilterTypeChange} />
         <Button
           variant="contained"
           color="secondary"

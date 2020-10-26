@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Tooltip,
@@ -97,6 +97,9 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingLeft: theme.spacing(3),
       marginBottom: theme.spacing(2),
     },
+    repeatButton: {
+      padding: 0,
+    },
     table: {
       minWidth: 750,
     },
@@ -128,10 +131,42 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
   refreshTransactions,
 }) => {
   const classes = useStyles();
-  const [order, setOrder] = React.useState<Order>("asc");
-  const [orderBy, setOrderBy] = React.useState<keyof ITransaction>("date");
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [order, setOrder] = useState<Order>("desc");
+  const [orderBy, setOrderBy] = useState<keyof ITransaction>("date");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [filteredTransactions, setFilteredTransactions] = useState<
+    ITransaction[]
+  >(transactions);
+  const [filterType, setFilterType] = useState({
+    credit: true,
+    debet: true,
+  });
+
+  // Filter transactions on filter or transactions change
+  useEffect(() => {
+    setFilteredTransactions(
+      transactions.filter((t) => {
+        return (
+          (filterType.credit && t.amount > 0) ||
+          (filterType.debet && t.amount < 0)
+        );
+      })
+    );
+  }, [filterType, transactions]);
+
+  //Change page if there is no transactions after filter on selected page
+  useEffect(() => {
+    if (page * rowsPerPage > filteredTransactions.length) {
+      setPage(Math.floor(filteredTransactions.length / rowsPerPage));
+    }
+  }, [filteredTransactions, page, rowsPerPage]);
+
+  const handleFilterTypeChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFilterType({ ...filterType, [event.target.name]: event.target.checked });
+  };
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -142,7 +177,10 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
     setOrderBy(property);
   };
 
-  const handleClick = (event: React.MouseEvent<unknown>, row: ITransaction) => {
+  const handleRepeat = (
+    event: React.MouseEvent<unknown>,
+    row: ITransaction
+  ) => {
     handleOpenDialog({ name: row.username, amount: row.amount });
   };
 
@@ -159,7 +197,7 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
 
   const emptyRows =
     rowsPerPage -
-    Math.min(rowsPerPage, transactions.length - page * rowsPerPage);
+    Math.min(rowsPerPage, filteredTransactions.length - page * rowsPerPage);
 
   const tableContent = loading ? (
     <Box display="flex" mt={3} justifyContent="center">
@@ -180,7 +218,7 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
           onRequestSort={handleRequestSort}
         />
         <TableBody>
-          {stableSort(transactions, getComparator(order, orderBy))
+          {stableSort(filteredTransactions, getComparator(order, orderBy))
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             .map((row: ITransaction, index) => {
               return (
@@ -206,8 +244,9 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
                     {row.amount < 0 ? (
                       <Tooltip title="Repeat">
                         <IconButton
+                          className={classes.repeatButton}
                           color="primary"
-                          onClick={(event) => handleClick(event, row)}
+                          onClick={(event) => handleRepeat(event, row)}
                         >
                           <RepeatIcon />
                         </IconButton>
@@ -218,7 +257,7 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
               );
             })}
           {emptyRows > 0 && (
-            <TableRow style={{ height: 53 * emptyRows }}>
+            <TableRow style={{ height: 64 * emptyRows }}>
               <TableCell colSpan={6} />
             </TableRow>
           )}
@@ -233,12 +272,14 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
         <TransactionsToolbar
           handleOpenDialog={handleOpenDialog}
           refreshTransactions={refreshTransactions}
+          filterType={filterType}
+          handleFilterTypeChange={handleFilterTypeChange}
         />
         {tableContent}
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={transactions.length}
+          count={filteredTransactions.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}

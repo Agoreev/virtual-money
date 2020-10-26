@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import {
   ListItem,
   List,
@@ -12,7 +12,6 @@ import {
   Box,
   CircularProgress,
 } from "@material-ui/core";
-import { lighten } from "@material-ui/core/styles";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import RepeatIcon from "@material-ui/icons/Repeat";
@@ -32,23 +31,6 @@ const useStyles = makeStyles((theme) => ({
       display: "none",
     },
   },
-  root: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(1),
-  },
-  highlight:
-    theme.palette.type === "light"
-      ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
-      : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
-  title: {
-    flex: "1 1 100%",
-  },
 }));
 
 interface ITransactionsListProps {
@@ -65,6 +47,16 @@ const TransactionsList: React.FC<ITransactionsListProps> = ({
   refreshTransactions,
 }) => {
   const classes = useStyles();
+  const [filterType, setFilterType] = useState({
+    credit: true,
+    debet: true,
+  });
+
+  const handleFilterTypeChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFilterType({ ...filterType, [event.target.name]: event.target.checked });
+  };
   const handleClick = (event: React.MouseEvent<unknown>, t: ITransaction) => {
     handleOpenDialog({ name: t.username, amount: t.amount });
   };
@@ -128,6 +120,8 @@ const TransactionsList: React.FC<ITransactionsListProps> = ({
       <TransactionsToolbar
         handleOpenDialog={handleOpenDialog}
         refreshTransactions={refreshTransactions}
+        filterType={filterType}
+        handleFilterTypeChange={handleFilterTypeChange}
       />
       {list}
     </Fragment>
