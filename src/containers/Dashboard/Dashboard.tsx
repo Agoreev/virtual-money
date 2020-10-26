@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import {
   Container,
   Box,
   CircularProgress,
   makeStyles,
+  Hidden,
 } from "@material-ui/core";
 import { connect, ConnectedProps } from "react-redux";
 import { ThunkDispatch } from "redux-thunk";
@@ -16,7 +17,8 @@ import {
 } from "../../store/transactions/actions";
 import { getUserInfo } from "../../store/auth/actions";
 import NavBar from "./NavBar/NavBar";
-import TransactionsTable from "./TransactionsTable/TransactionsTable";
+import TransactionsTable from "./Transactions/TransactionsTable";
+import TransactionsList from "./Transactions/TransactionsList";
 import CreateTransactionDialog from "./CreateTransactionDialog/CreateTransactionDialog";
 
 const useStyles = makeStyles((theme) => ({
@@ -105,19 +107,31 @@ const Dashboard: React.FC<PropsFromRedux> = ({
       </Box>
     );
   }
+
+  const transactionsView = (
+    <Fragment>
+      <Hidden smDown>
+        <TransactionsTable
+          transactions={transactions}
+          handleOpenDialog={handleOpenCreateTransaction}
+          loading={transactionsLoading}
+        />
+      </Hidden>
+      <Hidden mdUp>
+        <TransactionsList
+          transactions={transactions}
+          handleOpenDialog={handleOpenCreateTransaction}
+          loading={transactionsLoading}
+        />
+      </Hidden>
+    </Fragment>
+  );
   return (
     <div className="Dashboard">
       <NavBar user={user} />
       <Box mt={3}>
         <main className={classes.main}>
-          <Container maxWidth="md">
-            <TransactionsTable
-              transactions={transactions}
-              loading={transactionsLoading}
-              error={transactionsError}
-              handleOpenDialog={handleOpenCreateTransaction}
-            />
-          </Container>
+          <Container maxWidth="md">{transactionsView}</Container>
         </main>
       </Box>
       <CreateTransactionDialog
