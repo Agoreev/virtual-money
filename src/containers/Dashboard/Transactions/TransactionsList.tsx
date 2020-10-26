@@ -15,7 +15,7 @@ import {
 import { lighten } from "@material-ui/core/styles";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
-import ReplayIcon from "@material-ui/icons/Replay";
+import RepeatIcon from "@material-ui/icons/Repeat";
 
 import { ITransaction } from "../../../store/transactions/types";
 import { ITransactionData } from "../../../store/transactions/actions";
@@ -55,12 +55,14 @@ interface ITransactionsListProps {
   transactions: ITransaction[];
   handleOpenDialog: (data?: ITransactionData | null) => void;
   loading: boolean;
+  refreshTransactions: () => void;
 }
 
 const TransactionsList: React.FC<ITransactionsListProps> = ({
   transactions,
   handleOpenDialog,
   loading,
+  refreshTransactions,
 }) => {
   const classes = useStyles();
   const handleClick = (event: React.MouseEvent<unknown>, t: ITransaction) => {
@@ -109,7 +111,7 @@ const TransactionsList: React.FC<ITransactionsListProps> = ({
                       handleClick(event, t)
                     }
                   >
-                    <ReplayIcon />
+                    <RepeatIcon />
                   </IconButton>
                 </ListItemSecondaryAction>
               ) : null}
@@ -123,7 +125,10 @@ const TransactionsList: React.FC<ITransactionsListProps> = ({
 
   return (
     <Fragment>
-      <TransactionsToolbar handleOpenDialog={handleOpenDialog} />
+      <TransactionsToolbar
+        handleOpenDialog={handleOpenDialog}
+        refreshTransactions={refreshTransactions}
+      />
       {list}
     </Fragment>
   );

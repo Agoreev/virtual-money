@@ -5,8 +5,16 @@ import {
   makeStyles,
   Theme,
 } from "@material-ui/core/styles";
-import { Button, Typography, Toolbar } from "@material-ui/core";
+import {
+  Button,
+  Typography,
+  Toolbar,
+  IconButton,
+  Tooltip,
+  Box,
+} from "@material-ui/core";
 import Icon from "@material-ui/core/Icon";
+import RefreshIcon from "@material-ui/icons/Refresh";
 import { ITransactionData } from "../../../store/transactions/actions";
 
 const useToolbarStyles = makeStyles((theme: Theme) =>
@@ -15,50 +23,43 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(1),
     },
-    highlight:
-      theme.palette.type === "light"
-        ? {
-            color: theme.palette.secondary.main,
-            backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-          }
-        : {
-            color: theme.palette.text.primary,
-            backgroundColor: theme.palette.secondary.dark,
-          },
-    title: {
-      flex: "1 1 100%",
+    actions: {
+      marginLeft: "auto",
     },
   })
 );
 
 interface ITransactionsToolbarProps {
   handleOpenDialog: (data?: ITransactionData | null) => void;
+  refreshTransactions: () => void;
 }
 const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
   handleOpenDialog,
+  refreshTransactions,
 }) => {
   const classes = useToolbarStyles();
 
   return (
     <Toolbar className={classes.root}>
-      <Typography
-        className={classes.title}
-        variant="h6"
-        id="tableTitle"
-        component="div"
-      >
+      <Typography variant="h6" id="tableTitle" component="div">
         Transactions
       </Typography>
-
-      <Button
-        variant="contained"
-        color="secondary"
-        size="medium"
-        endIcon={<Icon>send</Icon>}
-        onClick={() => handleOpenDialog()}
-      >
-        Create
-      </Button>
+      <Tooltip title="Refresh">
+        <IconButton onClick={refreshTransactions}>
+          <RefreshIcon />
+        </IconButton>
+      </Tooltip>
+      <Box className={classes.actions}>
+        <Button
+          variant="contained"
+          color="secondary"
+          size="medium"
+          endIcon={<Icon>send</Icon>}
+          onClick={() => handleOpenDialog()}
+        >
+          Create
+        </Button>
+      </Box>
     </Toolbar>
   );
 };

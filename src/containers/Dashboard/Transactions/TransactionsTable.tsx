@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Tooltip,
@@ -15,7 +15,7 @@ import {
   TableSortLabel,
   Paper,
 } from "@material-ui/core";
-import ReplayIcon from "@material-ui/icons/Replay";
+import RepeatIcon from "@material-ui/icons/Repeat";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import { ITransaction } from "../../../store/transactions/types";
@@ -118,12 +118,14 @@ interface ITransactionsTableProps {
   transactions: ITransaction[];
   handleOpenDialog: (data?: ITransactionData | null) => void;
   loading: boolean;
+  refreshTransactions: () => void;
 }
 
 const TransactionsTable: React.FC<ITransactionsTableProps> = ({
   transactions,
   handleOpenDialog,
   loading,
+  refreshTransactions,
 }) => {
   const classes = useStyles();
   const [order, setOrder] = React.useState<Order>("asc");
@@ -207,7 +209,7 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
                           color="primary"
                           onClick={(event) => handleClick(event, row)}
                         >
-                          <ReplayIcon />
+                          <RepeatIcon />
                         </IconButton>
                       </Tooltip>
                     ) : null}
@@ -228,7 +230,10 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <TransactionsToolbar handleOpenDialog={handleOpenDialog} />
+        <TransactionsToolbar
+          handleOpenDialog={handleOpenDialog}
+          refreshTransactions={refreshTransactions}
+        />
         {tableContent}
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}

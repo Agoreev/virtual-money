@@ -84,6 +84,10 @@ const Dashboard: React.FC<PropsFromRedux> = ({
     amount: 0,
   });
 
+  const refreshTransactions = () => {
+    onFetchTransactions();
+  };
+
   const handleOpenCreateTransaction = (
     transactionData?: ITransactionData | null
   ) => {
@@ -115,6 +119,7 @@ const Dashboard: React.FC<PropsFromRedux> = ({
           transactions={transactions}
           handleOpenDialog={handleOpenCreateTransaction}
           loading={transactionsLoading}
+          refreshTransactions={refreshTransactions}
         />
       </Hidden>
       <Hidden mdUp>
@@ -122,6 +127,7 @@ const Dashboard: React.FC<PropsFromRedux> = ({
           transactions={transactions}
           handleOpenDialog={handleOpenCreateTransaction}
           loading={transactionsLoading}
+          refreshTransactions={refreshTransactions}
         />
       </Hidden>
     </Fragment>
