@@ -9,12 +9,17 @@ import {
 interface ITypeSwitchProps {
   type: { debet: boolean; credit: boolean };
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  row?: boolean;
 }
 
-const TypeSwitch: React.FC<ITypeSwitchProps> = ({ type, handleChange }) => {
+const TypeSwitch: React.FC<ITypeSwitchProps> = ({
+  type,
+  handleChange,
+  row = false,
+}) => {
   return (
     <FormControl component="fieldset">
-      <FormGroup row={true}>
+      <FormGroup row={row}>
         <FormControlLabel
           control={
             <Switch checked={type.debet} onChange={handleChange} name="debet" />

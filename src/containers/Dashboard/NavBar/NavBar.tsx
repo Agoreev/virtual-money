@@ -195,9 +195,12 @@ const NavBar: React.FC<INavBarProps> = ({ user }) => {
             alignItems="center"
             width="100%"
           >
-            <Box mr={3}>
-              <Balance balance={user!.balance} />
-            </Box>
+            <Hidden xsDown>
+              <Box mr={3}>
+                <Balance balance={user!.balance} />
+              </Box>
+            </Hidden>
+
             <ListItem
               disableGutters
               className={`${classes.iconListItem} ${classes.smBordered}`}

@@ -116,14 +116,12 @@ const Dashboard: React.FC<PropsFromRedux> = ({
       <NavBar user={user} />
       <Box mt={3}>
         <main className={classes.main}>
-          <Container maxWidth="md">
-            <TransactionsView
-              transactions={transactions}
-              handleOpenDialog={handleOpenCreateTransaction}
-              loading={transactionsLoading}
-              refreshTransactions={refreshTransactions}
-            />
-          </Container>
+          <TransactionsView
+            transactions={transactions}
+            handleOpenDialog={handleOpenCreateTransaction}
+            loading={transactionsLoading}
+            refreshTransactions={refreshTransactions}
+          />
         </main>
       </Box>
       <CreateTransactionDialog

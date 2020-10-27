@@ -3,6 +3,7 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Tooltip,
   IconButton,
+  Button,
   Box,
   CircularProgress,
   Table,
@@ -30,6 +31,7 @@ import { ITransaction } from "../../../store/transactions/types";
 import { ITransactionData } from "../../../store/transactions/actions";
 import { getComparator, stableSort, Order } from "./utils";
 import TransactionsToolbar from "./Toolbar";
+import FiltersDrawer from "./FiltersDrawer";
 
 interface HeadCell {
   disablePadding: boolean;
@@ -160,6 +162,7 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
     credit: true,
     debet: true,
   });
+  const [showFiltersDrawer, setShowFiltersDrawer] = useState<boolean>(false);
 
   // Filter transactions on filter or transactions change
   useEffect(() => {
@@ -179,6 +182,13 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
       setPage(Math.floor(filteredTransactions.length / rowsPerPage));
     }
   }, [filteredTransactions, page, rowsPerPage]);
+
+  const openFiltersDrawer = () => {
+    setShowFiltersDrawer(true);
+  };
+  const closeFiltersDrawer = () => {
+    setShowFiltersDrawer(false);
+  };
 
   const handleFilterTypeChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -363,6 +373,21 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
           filterType={filterType}
           handleFilterTypeChange={handleFilterTypeChange}
         />
+        <Hidden mdUp>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={openFiltersDrawer}
+          >
+            Filters and sorting
+          </Button>
+          <FiltersDrawer
+            filterType={filterType}
+            handleFilterTypeChange={handleFilterTypeChange}
+            open={showFiltersDrawer}
+            onClose={closeFiltersDrawer}
+          />
+        </Hidden>
         {content}
       </Paper>
     </div>

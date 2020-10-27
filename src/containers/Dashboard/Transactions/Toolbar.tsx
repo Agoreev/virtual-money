@@ -7,6 +7,7 @@ import {
   IconButton,
   Tooltip,
   Box,
+  Hidden,
 } from "@material-ui/core";
 import Icon from "@material-ui/core/Icon";
 import RefreshIcon from "@material-ui/icons/Refresh";
@@ -16,8 +17,8 @@ import TypeSwitch from "./TypeSwitch";
 const useToolbarStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(1),
+      paddingLeft: 0,
+      paddingRight: 0,
     },
     actions: {
       marginLeft: "auto",
@@ -50,7 +51,14 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
         </IconButton>
       </Tooltip>
       <Box className={classes.actions}>
-        <TypeSwitch type={filterType} handleChange={handleFilterTypeChange} />
+        <Hidden smDown>
+          <TypeSwitch
+            type={filterType}
+            handleChange={handleFilterTypeChange}
+            row={true}
+          />
+        </Hidden>
+
         <Button
           variant="contained"
           color="secondary"
