@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
   Tooltip,
@@ -14,6 +14,14 @@ import {
   TableRow,
   TableSortLabel,
   Paper,
+  ListItem,
+  List,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+  ListItemSecondaryAction,
+  Divider,
+  Hidden,
 } from "@material-ui/core";
 import RepeatIcon from "@material-ui/icons/Repeat";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
@@ -114,17 +122,27 @@ const useStyles = makeStyles((theme: Theme) =>
       top: 20,
       width: 1,
     },
+    transactionsList: {
+      width: "100%",
+      margin: "0 auto",
+      backgroundColor: theme.palette.background.paper,
+    },
+    divider: {
+      "&:last-child": {
+        display: "none",
+      },
+    },
   })
 );
 
-interface ITransactionsTableProps {
+interface ITransactionsViewProps {
   transactions: ITransaction[];
   handleOpenDialog: (data?: ITransactionData | null) => void;
   loading: boolean;
   refreshTransactions: () => void;
 }
 
-const TransactionsTable: React.FC<ITransactionsTableProps> = ({
+const TransactionsView: React.FC<ITransactionsViewProps> = ({
   transactions,
   handleOpenDialog,
   loading,
@@ -199,71 +217,141 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
     rowsPerPage -
     Math.min(rowsPerPage, filteredTransactions.length - page * rowsPerPage);
 
-  const tableContent = loading ? (
+  const transactionsTable = (
+    <Fragment>
+      <TableContainer>
+        <Table
+          className={classes.table}
+          aria-labelledby="tableTitle"
+          size={"medium"}
+          aria-label="enhanced table"
+        >
+          <EnhancedTableHead
+            classes={classes}
+            order={order}
+            orderBy={orderBy}
+            onRequestSort={handleRequestSort}
+          />
+          <TableBody>
+            {stableSort(filteredTransactions, getComparator(order, orderBy))
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row: ITransaction, index) => {
+                return (
+                  <TableRow hover role="button" tabIndex={-1} key={row.id}>
+                    <TableCell>
+                      {row.amount > 0 ? (
+                        <Tooltip title="Credit">
+                          <ArrowUpwardIcon className="text-green" />
+                        </Tooltip>
+                      ) : (
+                        <Tooltip title="Debet">
+                          <ArrowDownwardIcon className="text-red" />
+                        </Tooltip>
+                      )}
+                    </TableCell>
+                    <TableCell component="th" scope="row" padding="none">
+                      {row.date}
+                    </TableCell>
+                    <TableCell>{row.username}</TableCell>
+                    <TableCell align="right">{row.amount} PW</TableCell>
+                    <TableCell align="right">{row.balance} PW</TableCell>
+                    <TableCell align="right">
+                      {row.amount < 0 ? (
+                        <Tooltip title="Repeat">
+                          <IconButton
+                            className={classes.repeatButton}
+                            color="primary"
+                            onClick={(event) => handleRepeat(event, row)}
+                          >
+                            <RepeatIcon />
+                          </IconButton>
+                        </Tooltip>
+                      ) : null}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            {emptyRows > 0 && (
+              <TableRow style={{ height: 64 * emptyRows }}>
+                <TableCell colSpan={6} />
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={filteredTransactions.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
+    </Fragment>
+  );
+  const transactionsList = (
+    <List className={classes.transactionsList}>
+      {stableSort(filteredTransactions, getComparator(order, orderBy)).map(
+        (t) => {
+          return (
+            <Fragment key={t.id}>
+              <ListItem>
+                <ListItemIcon>
+                  {t.amount > 0 ? (
+                    <ArrowUpwardIcon className="text-green" />
+                  ) : (
+                    <ArrowDownwardIcon className="text-red" />
+                  )}
+                </ListItemIcon>
+                <ListItemText
+                  secondary={
+                    <Fragment>
+                      {`${t.amount > 0 ? "From: " : "To: "} ${t.username}`}
+                      <br />
+                      {`Date: ${t.date}`}
+                    </Fragment>
+                  }
+                  primary={
+                    <Typography
+                      variant="subtitle1"
+                      className={t.amount > 0 ? "text-green" : "text-red"}
+                    >
+                      {t.amount} PW
+                    </Typography>
+                  }
+                />
+                {t.amount < 0 ? (
+                  <ListItemSecondaryAction>
+                    <IconButton
+                      edge="end"
+                      color="primary"
+                      onClick={(event: React.MouseEvent<unknown>) =>
+                        handleRepeat(event, t)
+                      }
+                    >
+                      <RepeatIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                ) : null}
+              </ListItem>
+              <Divider component="li" className={classes.divider} />
+            </Fragment>
+          );
+        }
+      )}
+    </List>
+  );
+
+  const content = loading ? (
     <Box display="flex" mt={3} justifyContent="center">
       <CircularProgress />
     </Box>
   ) : (
-    <TableContainer>
-      <Table
-        className={classes.table}
-        aria-labelledby="tableTitle"
-        size={"medium"}
-        aria-label="enhanced table"
-      >
-        <EnhancedTableHead
-          classes={classes}
-          order={order}
-          orderBy={orderBy}
-          onRequestSort={handleRequestSort}
-        />
-        <TableBody>
-          {stableSort(filteredTransactions, getComparator(order, orderBy))
-            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((row: ITransaction, index) => {
-              return (
-                <TableRow hover role="button" tabIndex={-1} key={row.id}>
-                  <TableCell>
-                    {row.amount > 0 ? (
-                      <Tooltip title="Credit">
-                        <ArrowUpwardIcon className="text-green" />
-                      </Tooltip>
-                    ) : (
-                      <Tooltip title="Debet">
-                        <ArrowDownwardIcon className="text-red" />
-                      </Tooltip>
-                    )}
-                  </TableCell>
-                  <TableCell component="th" scope="row" padding="none">
-                    {row.date}
-                  </TableCell>
-                  <TableCell>{row.username}</TableCell>
-                  <TableCell align="right">{row.amount} PW</TableCell>
-                  <TableCell align="right">{row.balance} PW</TableCell>
-                  <TableCell align="right">
-                    {row.amount < 0 ? (
-                      <Tooltip title="Repeat">
-                        <IconButton
-                          className={classes.repeatButton}
-                          color="primary"
-                          onClick={(event) => handleRepeat(event, row)}
-                        >
-                          <RepeatIcon />
-                        </IconButton>
-                      </Tooltip>
-                    ) : null}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          {emptyRows > 0 && (
-            <TableRow style={{ height: 64 * emptyRows }}>
-              <TableCell colSpan={6} />
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Fragment>
+      <Hidden smDown>{transactionsTable}</Hidden>
+      <Hidden mdUp>{transactionsList}</Hidden>
+    </Fragment>
   );
 
   return (
@@ -275,18 +363,9 @@ const TransactionsTable: React.FC<ITransactionsTableProps> = ({
           filterType={filterType}
           handleFilterTypeChange={handleFilterTypeChange}
         />
-        {tableContent}
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={filteredTransactions.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
+        {content}
       </Paper>
     </div>
   );
 };
-export default TransactionsTable;
+export default TransactionsView;

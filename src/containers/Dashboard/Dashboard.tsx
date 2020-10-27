@@ -17,8 +17,7 @@ import {
 } from "../../store/transactions/actions";
 import { getUserInfo } from "../../store/auth/actions";
 import NavBar from "./NavBar/NavBar";
-import TransactionsTable from "./Transactions/TransactionsTable";
-import TransactionsList from "./Transactions/TransactionsList";
+import TransactionsView from "./Transactions/TransactionsView";
 import CreateTransactionDialog from "./CreateTransactionDialog/CreateTransactionDialog";
 
 const useStyles = makeStyles((theme) => ({
@@ -112,32 +111,19 @@ const Dashboard: React.FC<PropsFromRedux> = ({
     );
   }
 
-  const transactionsView = (
-    <Fragment>
-      <Hidden smDown>
-        <TransactionsTable
-          transactions={transactions}
-          handleOpenDialog={handleOpenCreateTransaction}
-          loading={transactionsLoading}
-          refreshTransactions={refreshTransactions}
-        />
-      </Hidden>
-      <Hidden mdUp>
-        <TransactionsList
-          transactions={transactions}
-          handleOpenDialog={handleOpenCreateTransaction}
-          loading={transactionsLoading}
-          refreshTransactions={refreshTransactions}
-        />
-      </Hidden>
-    </Fragment>
-  );
   return (
     <div className="Dashboard">
       <NavBar user={user} />
       <Box mt={3}>
         <main className={classes.main}>
-          <Container maxWidth="md">{transactionsView}</Container>
+          <Container maxWidth="md">
+            <TransactionsView
+              transactions={transactions}
+              handleOpenDialog={handleOpenCreateTransaction}
+              loading={transactionsLoading}
+              refreshTransactions={refreshTransactions}
+            />
+          </Container>
         </main>
       </Box>
       <CreateTransactionDialog
