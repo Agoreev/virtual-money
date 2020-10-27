@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import TypeSwitch from "./TypeSwitch";
+import { IFilter } from "./TransactionsView";
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -20,15 +21,15 @@ const useStyles = makeStyles((theme) => ({
 interface IFiltersDrawer {
   open: boolean;
   onClose: () => void;
-  filterType: { debet: boolean; credit: boolean };
-  handleFilterTypeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  filter: IFilter;
+  handleFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const FiltersDrawer: React.FC<IFiltersDrawer> = ({
   onClose,
   open,
-  filterType,
-  handleFilterTypeChange,
+  filter,
+  handleFilterChange,
 }) => {
   const classes = useStyles();
   return (
@@ -56,7 +57,10 @@ const FiltersDrawer: React.FC<IFiltersDrawer> = ({
       <Box p={2} display="flex" flexDirection="column" width="100%">
         <Box mb={2}>
           <Typography variant="subtitle1">Transaction types</Typography>
-          <TypeSwitch type={filterType} handleChange={handleFilterTypeChange} />
+          <TypeSwitch
+            type={{ debet: filter.debet, credit: filter.credit }}
+            handleChange={handleFilterChange}
+          />
         </Box>
 
         <Divider />

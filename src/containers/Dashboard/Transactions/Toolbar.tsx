@@ -8,11 +8,20 @@ import {
   Tooltip,
   Box,
   Hidden,
+  TextField,
 } from "@material-ui/core";
+import "date-fns";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from "@material-ui/pickers";
+
 import Icon from "@material-ui/core/Icon";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import { ITransactionData } from "../../../store/transactions/actions";
 import TypeSwitch from "./TypeSwitch";
+import { IFilter } from "./TransactionsView";
 
 const useToolbarStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -29,14 +38,14 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
 interface ITransactionsToolbarProps {
   handleOpenDialog: (data?: ITransactionData | null) => void;
   refreshTransactions: () => void;
-  filterType: { debet: boolean; credit: boolean };
-  handleFilterTypeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  filter: IFilter;
+  handleFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
   handleOpenDialog,
   refreshTransactions,
-  filterType,
-  handleFilterTypeChange,
+  filter,
+  handleFilterChange,
 }) => {
   const classes = useToolbarStyles();
 
@@ -52,13 +61,40 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
       </Tooltip>
       <Box className={classes.actions}>
         <Hidden smDown>
+          <Typography variant="subtitle1">Filter</Typography>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <KeyboardDatePicker
+              disableToolbar
+              variant="inline"
+              format="MM/dd/yyyy"
+              name="date"
+              margin="normal"
+              label="Date"
+              value={filter.date}
+              onChange={handleFilterChange}
+            />
+          </MuiPickersUtilsProvider>
+          <TextField
+            variant="outlined"
+            label="Name"
+            name="name"
+            value={filter.name}
+            onChange={handleFilterChange}
+          />
+          <TextField
+            variant="outlined"
+            label="amount"
+            name="amount"
+            type="number"
+            value={filter.amount}
+            onChange={handleFilterChange}
+          />
           <TypeSwitch
-            type={filterType}
-            handleChange={handleFilterTypeChange}
+            type={{ debet: filter.debet, credit: filter.credit }}
+            handleChange={handleFilterChange}
             row={true}
           />
         </Hidden>
-
         <Button
           variant="contained"
           color="secondary"

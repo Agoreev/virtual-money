@@ -1,11 +1,5 @@
-import React, { Fragment, useEffect, useState } from "react";
-import {
-  Container,
-  Box,
-  CircularProgress,
-  makeStyles,
-  Hidden,
-} from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { Box, CircularProgress, makeStyles, Hidden } from "@material-ui/core";
 import { connect, ConnectedProps } from "react-redux";
 import { ThunkDispatch } from "redux-thunk";
 import { Redirect } from "react-router-dom";
@@ -19,6 +13,7 @@ import { getUserInfo } from "../../store/auth/actions";
 import NavBar from "./NavBar/NavBar";
 import TransactionsView from "./Transactions/TransactionsView";
 import CreateTransactionDialog from "./CreateTransactionDialog/CreateTransactionDialog";
+import Balance from "../../components/Balance/Balance";
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -116,6 +111,12 @@ const Dashboard: React.FC<PropsFromRedux> = ({
       <NavBar user={user} />
       <Box mt={3}>
         <main className={classes.main}>
+          <Hidden smUp>
+            <Box m={3}>
+              <Balance balance={user!.balance} />
+            </Box>
+          </Hidden>
+
           <TransactionsView
             transactions={transactions}
             handleOpenDialog={handleOpenCreateTransaction}

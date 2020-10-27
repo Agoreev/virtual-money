@@ -165,8 +165,12 @@ const NavBar: React.FC<INavBarProps> = ({ user }) => {
           <Box display="flex" alignItems="center">
             <Hidden smUp>
               <Box mr={1}>
-                <IconButton aria-label="Open navigation" color="primary">
-                  <MenuIcon onClick={showMobileDrawer} />
+                <IconButton
+                  aria-label="Open navigation"
+                  color="primary"
+                  onClick={showMobileDrawer}
+                >
+                  <MenuIcon />
                 </IconButton>
               </Box>
             </Hidden>

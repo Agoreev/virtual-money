@@ -144,6 +144,14 @@ interface ITransactionsViewProps {
   refreshTransactions: () => void;
 }
 
+export interface IFilter {
+  credit: boolean;
+  debet: boolean;
+  name: string | null;
+  amount: number | null;
+  date: Date | null;
+}
+
 const TransactionsView: React.FC<ITransactionsViewProps> = ({
   transactions,
   handleOpenDialog,
@@ -158,9 +166,12 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
   const [filteredTransactions, setFilteredTransactions] = useState<
     ITransaction[]
   >(transactions);
-  const [filterType, setFilterType] = useState({
+  const [filter, setFilter] = useState<IFilter>({
     credit: true,
     debet: true,
+    name: null,
+    amount: null,
+    date: null,
   });
   const [showFiltersDrawer, setShowFiltersDrawer] = useState<boolean>(false);
 
@@ -169,12 +180,11 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
     setFilteredTransactions(
       transactions.filter((t) => {
         return (
-          (filterType.credit && t.amount > 0) ||
-          (filterType.debet && t.amount < 0)
+          (filter.credit && t.amount > 0) || (filter.debet && t.amount < 0)
         );
       })
     );
-  }, [filterType, transactions]);
+  }, [filter, transactions]);
 
   //Change page if there is no transactions after filter on selected page
   useEffect(() => {
@@ -190,10 +200,12 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
     setShowFiltersDrawer(false);
   };
 
-  const handleFilterTypeChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setFilterType({ ...filterType, [event.target.name]: event.target.checked });
+  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.type === "checkbox") {
+      setFilter({ ...filter, [event.target.name]: event.target.checked });
+    } else {
+      setFilter({ ...filter, [event.target.name]: event.target.value });
+    }
   };
 
   const handleRequestSort = (
@@ -301,56 +313,67 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
     </Fragment>
   );
   const transactionsList = (
-    <List className={classes.transactionsList}>
-      {stableSort(filteredTransactions, getComparator(order, orderBy)).map(
-        (t) => {
-          return (
-            <Fragment key={t.id}>
-              <ListItem>
-                <ListItemIcon>
-                  {t.amount > 0 ? (
-                    <ArrowUpwardIcon className="text-green" />
-                  ) : (
-                    <ArrowDownwardIcon className="text-red" />
-                  )}
-                </ListItemIcon>
-                <ListItemText
-                  secondary={
-                    <Fragment>
-                      {`${t.amount > 0 ? "From: " : "To: "} ${t.username}`}
-                      <br />
-                      {`Date: ${t.date}`}
-                    </Fragment>
-                  }
-                  primary={
-                    <Typography
-                      variant="subtitle1"
-                      className={t.amount > 0 ? "text-green" : "text-red"}
-                    >
-                      {t.amount} PW
-                    </Typography>
-                  }
-                />
-                {t.amount < 0 ? (
-                  <ListItemSecondaryAction>
-                    <IconButton
-                      edge="end"
-                      color="primary"
-                      onClick={(event: React.MouseEvent<unknown>) =>
-                        handleRepeat(event, t)
-                      }
-                    >
-                      <RepeatIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                ) : null}
-              </ListItem>
-              <Divider component="li" className={classes.divider} />
-            </Fragment>
-          );
-        }
-      )}
-    </List>
+    <Fragment>
+      <Button variant="outlined" color="secondary" onClick={openFiltersDrawer}>
+        Filters and sorting
+      </Button>
+      <FiltersDrawer
+        filter={filter}
+        handleFilterChange={handleFilterChange}
+        open={showFiltersDrawer}
+        onClose={closeFiltersDrawer}
+      />
+      <List className={classes.transactionsList}>
+        {stableSort(filteredTransactions, getComparator(order, orderBy)).map(
+          (t) => {
+            return (
+              <Fragment key={t.id}>
+                <ListItem>
+                  <ListItemIcon>
+                    {t.amount > 0 ? (
+                      <ArrowUpwardIcon className="text-green" />
+                    ) : (
+                      <ArrowDownwardIcon className="text-red" />
+                    )}
+                  </ListItemIcon>
+                  <ListItemText
+                    secondary={
+                      <Fragment>
+                        {`${t.amount > 0 ? "From: " : "To: "} ${t.username}`}
+                        <br />
+                        {`Date: ${t.date}`}
+                      </Fragment>
+                    }
+                    primary={
+                      <Typography
+                        variant="subtitle1"
+                        className={t.amount > 0 ? "text-green" : "text-red"}
+                      >
+                        {t.amount} PW
+                      </Typography>
+                    }
+                  />
+                  {t.amount < 0 ? (
+                    <ListItemSecondaryAction>
+                      <IconButton
+                        edge="end"
+                        color="primary"
+                        onClick={(event: React.MouseEvent<unknown>) =>
+                          handleRepeat(event, t)
+                        }
+                      >
+                        <RepeatIcon />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  ) : null}
+                </ListItem>
+                <Divider component="li" className={classes.divider} />
+              </Fragment>
+            );
+          }
+        )}
+      </List>
+    </Fragment>
   );
 
   const content = loading ? (
@@ -370,24 +393,9 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
         <TransactionsToolbar
           handleOpenDialog={handleOpenDialog}
           refreshTransactions={refreshTransactions}
-          filterType={filterType}
-          handleFilterTypeChange={handleFilterTypeChange}
+          filter={filter}
+          handleFilterChange={handleFilterChange}
         />
-        <Hidden mdUp>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={openFiltersDrawer}
-          >
-            Filters and sorting
-          </Button>
-          <FiltersDrawer
-            filterType={filterType}
-            handleFilterTypeChange={handleFilterTypeChange}
-            open={showFiltersDrawer}
-            onClose={closeFiltersDrawer}
-          />
-        </Hidden>
         {content}
       </Paper>
     </div>
