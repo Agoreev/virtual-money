@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  OutlinedInput,
-  makeStyles,
-  Typography,
-  Icon,
-  Box,
-  IconButton,
-} from "@material-ui/core";
+import { OutlinedInput, makeStyles, Box } from "@material-ui/core";
 import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
 
 const useStyles = makeStyles(() => ({

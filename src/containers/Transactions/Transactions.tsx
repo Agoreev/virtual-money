@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, CircularProgress, makeStyles, Hidden } from "@material-ui/core";
+import { Box, CircularProgress, makeStyles } from "@material-ui/core";
 import { connect, ConnectedProps } from "react-redux";
 import { ThunkDispatch } from "redux-thunk";
 import { Redirect } from "react-router-dom";
@@ -13,7 +13,6 @@ import { getUserInfo } from "../../store/auth/actions";
 import NavBar from "./NavBar/NavBar";
 import TransactionsView from "./Transactions/TransactionsView";
 import CreateTransactionDialog from "./CreateTransactionDialog/CreateTransactionDialog";
-import Balance from "../../components/Balance/Balance";
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -50,7 +49,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-const Dashboard: React.FC<PropsFromRedux> = ({
+const Transactions: React.FC<PropsFromRedux> = ({
   onCreateTransaction,
   onFetchTransactions,
   onGetUserInfo,
@@ -107,16 +106,10 @@ const Dashboard: React.FC<PropsFromRedux> = ({
   }
 
   return (
-    <div className="Dashboard">
+    <div className="Transactions">
       <NavBar user={user} />
       <Box mt={3}>
         <main className={classes.main}>
-          <Hidden smUp>
-            <Box m={3}>
-              <Balance balance={user!.balance} />
-            </Box>
-          </Hidden>
-
           <TransactionsView
             transactions={transactions}
             handleOpenDialog={handleOpenCreateTransaction}
@@ -135,4 +128,4 @@ const Dashboard: React.FC<PropsFromRedux> = ({
   );
 };
 
-export default connector(Dashboard);
+export default connector(Transactions);

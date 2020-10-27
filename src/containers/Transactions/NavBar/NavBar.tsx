@@ -16,7 +16,7 @@ import {
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
-import DashboardIcon from "@material-ui/icons/Dashboard";
+import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
 import React, { useState, Fragment } from "react";
 import { NavLink } from "react-router-dom";
 import NavigationDrawer from "../../../components/ui/NavigationDrawer";
@@ -139,12 +139,12 @@ const NavBar: React.FC<INavBarProps> = ({ user }) => {
 
   const menuItems = [
     {
-      link: "/dashboard",
-      name: "Dashboard",
+      link: "/transactions",
+      name: "Transactions",
       onClick: closeMobileDrawer,
       icon: {
-        desktop: <DashboardIcon fontSize="small" className="text-white" />, //TODO Change color on active state
-        mobile: <DashboardIcon className="text-white" />,
+        desktop: <AccountBalanceIcon fontSize="small" className="text-white" />, //TODO Change color on active state
+        mobile: <AccountBalanceIcon className="text-white" />,
       },
     },
     {
@@ -199,11 +199,9 @@ const NavBar: React.FC<INavBarProps> = ({ user }) => {
             alignItems="center"
             width="100%"
           >
-            <Hidden xsDown>
-              <Box mr={3}>
-                <Balance balance={user!.balance} />
-              </Box>
-            </Hidden>
+            <Box mr={1}>
+              <Balance balance={user!.balance} />
+            </Box>
 
             <ListItem
               disableGutters

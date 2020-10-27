@@ -60,7 +60,7 @@ const Home: React.FC<PropsFromRedux> = ({
   }
 
   if (isLoggedIn) {
-    return <Redirect to="/dashboard" />;
+    return <Redirect to="/transactions" />;
   }
 
   return (

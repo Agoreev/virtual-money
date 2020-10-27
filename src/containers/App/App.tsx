@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import GlobalStyles from "../../globalStyles";
 import theme from "../../theme";
 import Home from "../Home/Home";
-import Dashboard from "../Dashboard/Dashboard";
+import Transactions from "../Transactions/Transactions";
 import Logout from "../Logout/Logout";
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
         <Router>
           <Switch>
             <Route path="/" component={Home} exact />
-            <Route path="/dashboard" component={Dashboard} />
+            <Route path="/transactions" component={Transactions} />
             <Route path="/logout" component={Logout} />
             <Route render={() => <h2>Page not found</h2>} />
           </Switch>
