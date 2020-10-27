@@ -1,5 +1,13 @@
 import React from "react";
-import { OutlinedInput, makeStyles, Typography, Box } from "@material-ui/core";
+import {
+  OutlinedInput,
+  makeStyles,
+  Typography,
+  Icon,
+  Box,
+  IconButton,
+} from "@material-ui/core";
+import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
 
 const useStyles = makeStyles(() => ({
   input: { padding: "0px 9px", cursor: "pointer" },
@@ -23,9 +31,7 @@ const Balance: React.FC<IBalanceProps> = ({ balance }) => {
   return (
     <div className={classes.wrapper}>
       <Box mr={2}>
-        <Typography variant="subtitle1" color="textPrimary">
-          Balance
-        </Typography>
+        <AccountBalanceWalletIcon color="secondary" />
       </Box>
 
       <OutlinedInput

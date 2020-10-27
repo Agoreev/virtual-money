@@ -1,7 +1,6 @@
 import React from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {
-  Button,
   Typography,
   Toolbar,
   IconButton,
@@ -9,6 +8,7 @@ import {
   Box,
   Hidden,
   TextField,
+  Button,
 } from "@material-ui/core";
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
@@ -17,7 +17,7 @@ import {
   KeyboardDatePicker,
 } from "@material-ui/pickers";
 
-import Icon from "@material-ui/core/Icon";
+import AddIcon from "@material-ui/icons/Add";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import { ITransactionData } from "../../../store/transactions/actions";
 import TypeSwitch from "./TypeSwitch";
@@ -31,6 +31,8 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
     },
     actions: {
       marginLeft: "auto",
+      display: "flex",
+      alignItems: "center",
     },
   })
 );
@@ -40,12 +42,14 @@ interface ITransactionsToolbarProps {
   refreshTransactions: () => void;
   filter: IFilter;
   handleFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleDateFilterChange: (date: Date | null) => void;
 }
 const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
   handleOpenDialog,
   refreshTransactions,
   filter,
   handleFilterChange,
+  handleDateFilterChange,
 }) => {
   const classes = useToolbarStyles();
 
@@ -55,55 +59,72 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
         Transactions
       </Typography>
       <Tooltip title="Refresh">
-        <IconButton onClick={refreshTransactions}>
+        <IconButton color="secondary" onClick={refreshTransactions}>
           <RefreshIcon />
         </IconButton>
       </Tooltip>
+      <Box flex="1 0 auto">
+        <Button
+          variant="contained"
+          color="secondary"
+          endIcon={<AddIcon />}
+          onClick={() => handleOpenDialog()}
+        >
+          Create
+        </Button>
+      </Box>
+
       <Box className={classes.actions}>
         <Hidden smDown>
-          <Typography variant="subtitle1">Filter</Typography>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDatePicker
-              disableToolbar
-              variant="inline"
-              format="MM/dd/yyyy"
-              name="date"
-              margin="normal"
-              label="Date"
-              value={filter.date}
+          <Box mr={2} ml={2}>
+            <Typography variant="body1" component="span">
+              Filter
+            </Typography>
+          </Box>
+          <Box mr={2} width={180} flex="1 0 auto">
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                disableToolbar
+                variant="inline"
+                format="MM/dd/yyyy"
+                disableFuture
+                autoOk
+                name="date"
+                size="small"
+                inputVariant="outlined"
+                label="Date"
+                value={filter.date}
+                onChange={handleDateFilterChange}
+              />
+            </MuiPickersUtilsProvider>
+          </Box>
+          <Box mr={2} width={150}>
+            <TextField
+              variant="outlined"
+              size="small"
+              label="Name"
+              name="name"
+              value={filter.name}
               onChange={handleFilterChange}
             />
-          </MuiPickersUtilsProvider>
-          <TextField
-            variant="outlined"
-            label="Name"
-            name="name"
-            value={filter.name}
-            onChange={handleFilterChange}
-          />
-          <TextField
-            variant="outlined"
-            label="amount"
-            name="amount"
-            type="number"
-            value={filter.amount}
-            onChange={handleFilterChange}
-          />
+          </Box>
+          <Box mr={2} width={100}>
+            <TextField
+              variant="outlined"
+              label="Amount"
+              size="small"
+              name="amount"
+              type="number"
+              value={filter.amount}
+              onChange={handleFilterChange}
+            />
+          </Box>
           <TypeSwitch
             type={{ debet: filter.debet, credit: filter.credit }}
             handleChange={handleFilterChange}
             row={true}
           />
         </Hidden>
-        <Button
-          variant="contained"
-          color="secondary"
-          size="medium"
-          endIcon={<Icon>send</Icon>}
-          onClick={() => handleOpenDialog()}
-        >
-          Create
-        </Button>
       </Box>
     </Toolbar>
   );

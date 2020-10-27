@@ -147,9 +147,9 @@ interface ITransactionsViewProps {
 export interface IFilter {
   credit: boolean;
   debet: boolean;
-  name: string | null;
-  amount: number | null;
-  date: Date | null;
+  name?: string | null;
+  amount?: string | null;
+  date?: Date | null;
 }
 
 const TransactionsView: React.FC<ITransactionsViewProps> = ({
@@ -169,8 +169,8 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
   const [filter, setFilter] = useState<IFilter>({
     credit: true,
     debet: true,
-    name: null,
-    amount: null,
+    name: "",
+    amount: "",
     date: null,
   });
   const [showFiltersDrawer, setShowFiltersDrawer] = useState<boolean>(false);
@@ -180,7 +180,13 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
     setFilteredTransactions(
       transactions.filter((t) => {
         return (
-          (filter.credit && t.amount > 0) || (filter.debet && t.amount < 0)
+          ((filter.credit && t.amount > 0) || (filter.debet && t.amount < 0)) &&
+          ((filter.name && t.username.includes(filter.name)) || !filter.name) &&
+          ((filter.amount && Math.abs(t.amount) === parseInt(filter.amount)) ||
+            !filter.amount) &&
+          ((filter.date &&
+            new Date(t.date).toDateString() === filter.date.toDateString()) ||
+            !filter.date)
         );
       })
     );
@@ -206,6 +212,10 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
     } else {
       setFilter({ ...filter, [event.target.name]: event.target.value });
     }
+  };
+
+  const handleDateFilterChange = (date: Date | null) => {
+    setFilter({ ...filter, date });
   };
 
   const handleRequestSort = (
@@ -395,6 +405,7 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
           refreshTransactions={refreshTransactions}
           filter={filter}
           handleFilterChange={handleFilterChange}
+          handleDateFilterChange={handleDateFilterChange}
         />
         {content}
       </Paper>
