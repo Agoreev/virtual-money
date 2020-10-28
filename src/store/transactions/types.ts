@@ -9,6 +9,7 @@ export interface ITransaction {
 export interface TransactionsState {
   transactions: ITransaction[];
   loading: boolean;
+  createLoading: boolean;
   error?: string | null;
 }
 

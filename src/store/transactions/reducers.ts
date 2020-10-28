@@ -13,6 +13,7 @@ import {
 
 const initialState: TransactionsState = {
   transactions: [],
+  createLoading: false,
   loading: false,
   error: null,
 };
@@ -25,20 +26,20 @@ const reducer = (
     case CREATE_TRANSACTION_START:
       return {
         ...state,
-        loading: true,
+        createLoading: true,
         error: null,
       };
     case CREATE_TRANSACTION_SUCCESS:
       return {
         ...state,
         transactions: [...state.transactions, action.payload],
-        loading: false,
+        createLoading: false,
         error: null,
       };
     case CREATE_TRANSACTION_FAILED:
       return {
         ...state,
-        loading: false,
+        createLoading: false,
         error: action.payload,
       };
     case CREATE_TRANSACTION_ERROR_CLEAR:

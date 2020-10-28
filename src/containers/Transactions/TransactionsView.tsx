@@ -336,14 +336,6 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
   );
   const transactionsList = (
     <Fragment>
-      <Button
-        variant="outlined"
-        color="secondary"
-        onClick={openFiltersDrawer}
-        startIcon={<FilterListIcon />}
-      >
-        Filters and sorting
-      </Button>
       <FiltersDrawer
         filter={filter}
         handleFilterChange={handleFilterChange}
@@ -409,11 +401,15 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
     <Box display="flex" mt={3} justifyContent="center">
       <CircularProgress />
     </Box>
-  ) : (
+  ) : transactions.length > 0 ? (
     <Fragment>
       <Hidden smDown>{transactionsTable}</Hidden>
       <Hidden mdUp>{transactionsList}</Hidden>
     </Fragment>
+  ) : (
+    <Box textAlign="center" p={3}>
+      <Typography variant="subtitle1">There is no transactions yet.</Typography>
+    </Box>
   );
 
   return (
@@ -427,6 +423,16 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
           handleDateFilterChange={handleDateFilterChange}
           handleResetFilter={handleResetFilter}
         />
+        <Hidden mdUp>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={openFiltersDrawer}
+            startIcon={<FilterListIcon />}
+          >
+            Filters and sorting
+          </Button>
+        </Hidden>
         {content}
       </Paper>
     </div>

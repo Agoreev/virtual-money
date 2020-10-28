@@ -18,6 +18,8 @@ export const AUTH_FAILED = "AUTH_FAILED";
 export const AUTH_ERROR_CLEAR = "AUTH_ERROR_CLEAR";
 export const LOGOUT = "LOGOUT";
 
+export const BALANCE_CHANGE = "BALANCE_CHANGE";
+
 interface authStartAction {
   type: typeof AUTH_START;
 }
@@ -40,9 +42,15 @@ interface logoutAction {
   type: typeof LOGOUT;
 }
 
+interface balanceChange {
+  type: typeof BALANCE_CHANGE;
+  payload: number;
+}
+
 export type authActionTypes =
   | authStartAction
   | authSuccessAction
   | authFailedAction
   | authErrorClear
-  | logoutAction;
+  | logoutAction
+  | balanceChange;

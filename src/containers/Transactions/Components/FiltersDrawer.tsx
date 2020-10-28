@@ -113,14 +113,20 @@ const FiltersDrawer: React.FC<IFiltersDrawer> = ({
               onChange={handleFilterChange}
             />
           </Box>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={handleResetFilter}
-            startIcon={<ClearAllIcon />}
-          >
-            Reset filter
-          </Button>
+          {!filter.credit ||
+          !filter.debet ||
+          filter.date ||
+          filter.name ||
+          filter.amount ? (
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={handleResetFilter}
+              startIcon={<ClearAllIcon />}
+            >
+              Reset filter
+            </Button>
+          ) : null}
         </Box>
       </Box>
     </Drawer>

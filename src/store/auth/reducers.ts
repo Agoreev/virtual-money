@@ -6,6 +6,7 @@ import {
   AUTH_SUCCESS,
   authActionTypes,
   AUTH_ERROR_CLEAR,
+  BALANCE_CHANGE,
 } from "./types";
 
 const initialState: UserState = {
@@ -44,6 +45,14 @@ const reducer = (state = initialState, action: authActionTypes): UserState => {
       return {
         ...state,
         user: null,
+      };
+    case BALANCE_CHANGE:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          balance: action.payload,
+        },
       };
     default:
       return state;

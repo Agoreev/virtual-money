@@ -32,7 +32,7 @@ const mapDispatchToProps = (dispatch: ThunkDispatch<RootState, any, any>) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  isLoading: state.transactions.loading,
+  isLoading: state.transactions.createLoading,
   error: state.transactions.error,
 });
 
@@ -305,6 +305,7 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
       };
       onCreateTransaction(transactionData);
       setOpenNotification(true);
+
       onClose();
     }
   };

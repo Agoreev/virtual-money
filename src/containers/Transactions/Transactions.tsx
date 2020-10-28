@@ -61,12 +61,12 @@ const Transactions: React.FC<PropsFromRedux> = ({
   userError,
 }) => {
   const classes = useStyles();
+
+  //Fetch transactions on page load
   useEffect(() => {
-    if (!user?.id) {
-      onGetUserInfo();
-    }
+    onGetUserInfo();
     onFetchTransactions();
-  }, [onFetchTransactions, onGetUserInfo, user]);
+  }, [onFetchTransactions, onGetUserInfo]);
 
   const [openCreateTransaction, setOpenCreateTransaction] = useState<boolean>(
     false
@@ -78,6 +78,7 @@ const Transactions: React.FC<PropsFromRedux> = ({
   });
 
   const refreshTransactions = () => {
+    onGetUserInfo();
     onFetchTransactions();
   };
 
@@ -97,7 +98,7 @@ const Transactions: React.FC<PropsFromRedux> = ({
     return <Redirect to="/" />;
   }
 
-  if (userLoading || !user?.id) {
+  if (!user?.id) {
     return (
       <Box display="flex" mt={3} justifyContent="center">
         <CircularProgress />

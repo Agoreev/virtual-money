@@ -13,7 +13,7 @@ import {
   FETCH_TRANSACTIONS_FAILED,
   CREATE_TRANSACTION_ERROR_CLEAR,
 } from "./types";
-import { logout } from "../auth/actions";
+import { logout, balanceChange } from "../auth/actions";
 import { baseURL } from "../../api/api";
 
 const createTransactionStart = (): createTransactionActionTypes => {
@@ -77,6 +77,7 @@ export const createTransaction = (
       const transactionJSON = await transactionResp.json();
       const transaction: ITransaction = transactionJSON["trans_token"];
       dispatch(createTransactionSuccess(transaction));
+      dispatch(balanceChange(transaction.balance));
     } catch (error) {
       console.log(error);
       dispatch(createTransactionFailed(error));
@@ -121,7 +122,7 @@ export const fetchTransactions = (): ThunkAction<
   const token: string | null = localStorage.getItem("token");
   if (token) {
     try {
-      //2. Send user info request to the API
+      //1. Send transactions request to the API
       const transactionsResp = await fetch(
         baseURL + "/api/protected/transactions",
         {
@@ -135,7 +136,7 @@ export const fetchTransactions = (): ThunkAction<
       );
       const transactionsJSON = await transactionsResp.json();
       const transactions: ITransaction[] = transactionsJSON["trans_token"];
-      //3. Dispatch auth success action with user info
+      //2. Dispatchtransactions success action with transactions
       dispatch(fetchTransactionsSuccess(transactions));
     } catch (error) {
       console.log(error);
