@@ -99,7 +99,6 @@ const theme = createMuiTheme({
     },
     MuiDialog: {
       paper: {
-        width: "100%",
         maxWidth: 430,
         marginLeft: spacing,
         marginRight: spacing,
@@ -108,6 +107,7 @@ const theme = createMuiTheme({
     MuiTooltip: {
       tooltip: {
         backgroundColor: darkBlack,
+        fontSize: "0.8rem",
       },
     },
     MuiExpansionPanelDetails: {

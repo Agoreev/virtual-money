@@ -11,7 +11,7 @@ import {
 } from "../../store/transactions/actions";
 import { getUserInfo } from "../../store/auth/actions";
 import NavBar from "./NavBar/NavBar";
-import TransactionsView from "./Transactions/TransactionsView";
+import TransactionsView from "./TransactionsView";
 import CreateTransactionDialog from "./CreateTransactionDialog/CreateTransactionDialog";
 
 const useStyles = makeStyles((theme) => ({

@@ -25,13 +25,14 @@ import {
   Hidden,
 } from "@material-ui/core";
 import RepeatIcon from "@material-ui/icons/Repeat";
+import FilterListIcon from "@material-ui/icons/FilterList";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
-import { ITransaction } from "../../../store/transactions/types";
-import { ITransactionData } from "../../../store/transactions/actions";
-import { getComparator, stableSort, Order } from "./utils";
-import TransactionsToolbar from "./Toolbar";
-import FiltersDrawer from "./FiltersDrawer";
+import { ITransaction } from "../../store/transactions/types";
+import { ITransactionData } from "../../store/transactions/actions";
+import { getComparator, stableSort, Order } from "./Components/utils";
+import TransactionsToolbar from "./Components/Toolbar";
+import FiltersDrawer from "./Components/FiltersDrawer";
 
 interface HeadCell {
   disablePadding: boolean;
@@ -206,6 +207,17 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
     setShowFiltersDrawer(false);
   };
 
+  const handleResetFilter = () => {
+    setFilter({
+      ...filter,
+      credit: true,
+      debet: true,
+      name: "",
+      amount: "",
+      date: null,
+    });
+  };
+
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.type === "checkbox") {
       setFilter({ ...filter, [event.target.name]: event.target.checked });
@@ -324,7 +336,12 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
   );
   const transactionsList = (
     <Fragment>
-      <Button variant="outlined" color="secondary" onClick={openFiltersDrawer}>
+      <Button
+        variant="outlined"
+        color="secondary"
+        onClick={openFiltersDrawer}
+        startIcon={<FilterListIcon />}
+      >
         Filters and sorting
       </Button>
       <FiltersDrawer
@@ -332,6 +349,8 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
         handleFilterChange={handleFilterChange}
         open={showFiltersDrawer}
         onClose={closeFiltersDrawer}
+        handleDateFilterChange={handleDateFilterChange}
+        handleResetFilter={handleResetFilter}
       />
       <List className={classes.transactionsList}>
         {stableSort(filteredTransactions, getComparator(order, orderBy)).map(
@@ -406,6 +425,7 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
           filter={filter}
           handleFilterChange={handleFilterChange}
           handleDateFilterChange={handleDateFilterChange}
+          handleResetFilter={handleResetFilter}
         />
         {content}
       </Paper>

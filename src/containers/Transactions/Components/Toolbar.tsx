@@ -16,12 +16,12 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
-
+import ClearIcon from "@material-ui/icons/Clear";
 import AddIcon from "@material-ui/icons/Add";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import { ITransactionData } from "../../../store/transactions/actions";
 import TypeSwitch from "./TypeSwitch";
-import { IFilter } from "./TransactionsView";
+import { IFilter } from "../TransactionsView";
 
 const useToolbarStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -43,6 +43,7 @@ interface ITransactionsToolbarProps {
   filter: IFilter;
   handleFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleDateFilterChange: (date: Date | null) => void;
+  handleResetFilter: () => void;
 }
 const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
   handleOpenDialog,
@@ -50,6 +51,7 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
   filter,
   handleFilterChange,
   handleDateFilterChange,
+  handleResetFilter,
 }) => {
   const classes = useToolbarStyles();
 
@@ -76,12 +78,23 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
 
       <Box className={classes.actions}>
         <Hidden smDown>
-          <Box mr={2} ml={2}>
+          <Box mr={2} ml={2} display="flex" alignItems="center">
+            {!filter.credit ||
+            !filter.debet ||
+            filter.date ||
+            filter.name ||
+            filter.amount ? (
+              <Tooltip title="Reset filter">
+                <IconButton color="primary" onClick={handleResetFilter}>
+                  <ClearIcon />
+                </IconButton>
+              </Tooltip>
+            ) : null}
             <Typography variant="body1" component="span">
               Filter
             </Typography>
           </Box>
-          <Box mr={2} width={180} flex="1 0 auto">
+          <Box mr={2} width={160} flex="1 0 auto">
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <KeyboardDatePicker
                 disableToolbar
@@ -98,7 +111,7 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
               />
             </MuiPickersUtilsProvider>
           </Box>
-          <Box mr={2} width={150}>
+          <Box mr={2} width={140}>
             <TextField
               variant="outlined"
               size="small"
@@ -108,7 +121,7 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
               onChange={handleFilterChange}
             />
           </Box>
-          <Box mr={2} width={100}>
+          <Box mr={2} width={90} flex="1 0 auto">
             <TextField
               variant="outlined"
               label="Amount"

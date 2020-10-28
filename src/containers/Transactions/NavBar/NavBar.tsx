@@ -20,7 +20,7 @@ import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
 import React, { useState, Fragment } from "react";
 import { NavLink } from "react-router-dom";
 import NavigationDrawer from "../../../components/ui/NavigationDrawer";
-import Balance from "../../../components/Balance/Balance";
+import Balance from "../Components/Balance";
 import { IUser } from "../../../store/auth/types";
 
 const useStyles = makeStyles((theme) => ({
