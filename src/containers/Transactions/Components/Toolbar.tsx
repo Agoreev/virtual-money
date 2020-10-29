@@ -9,6 +9,7 @@ import {
   Hidden,
   TextField,
   Button,
+  MenuItem,
 } from "@material-ui/core";
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
@@ -41,7 +42,8 @@ interface ITransactionsToolbarProps {
   handleOpenDialog: (data?: ITransactionData | null) => void;
   refreshTransactions: () => void;
   filter: IFilter;
-  handleFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  users: string[];
+  handleFilterChange: (event: React.ChangeEvent<any>) => void;
   handleDateFilterChange: (date: Date | null) => void;
   handleResetFilter: () => void;
 }
@@ -49,6 +51,7 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
   handleOpenDialog,
   refreshTransactions,
   filter,
+  users,
   handleFilterChange,
   handleDateFilterChange,
   handleResetFilter,
@@ -113,13 +116,24 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
           </Box>
           <Box mr={2} width={140}>
             <TextField
-              variant="outlined"
+              select
               size="small"
+              variant="outlined"
               label="Name"
+              fullWidth
               name="name"
-              value={filter.name}
               onChange={handleFilterChange}
-            />
+              value={filter.name}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              {users.map((user) => (
+                <MenuItem value={user} key={user}>
+                  {user}
+                </MenuItem>
+              ))}
+            </TextField>
           </Box>
           <Box mr={2} width={90} flex="1 0 auto">
             <TextField

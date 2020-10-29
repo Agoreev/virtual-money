@@ -20,11 +20,13 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
-  ListItemSecondaryAction,
   Divider,
   Hidden,
 } from "@material-ui/core";
 import RepeatIcon from "@material-ui/icons/Repeat";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import EventIcon from "@material-ui/icons/Event";
+import AccountBalanceWalletOutlinedIcon from "@material-ui/icons/AccountBalanceWalletOutlined";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
@@ -32,7 +34,7 @@ import { ITransaction } from "../../store/transactions/types";
 import { ITransactionData } from "../../store/transactions/actions";
 import { getComparator, stableSort, Order } from "./Components/utils";
 import TransactionsToolbar from "./Components/Toolbar";
-import FiltersDrawer from "./Components/FiltersDrawer";
+import FiltersDrawer, { sortingTypes } from "./Components/FiltersDrawer";
 
 interface HeadCell {
   disablePadding: boolean;
@@ -239,6 +241,40 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
     setOrderBy(property);
   };
 
+  //Handle sorting in mobile drawer
+  const handleSortChange = (event: React.ChangeEvent<any>) => {
+    switch (event.target.value) {
+      case sortingTypes.dateDescending:
+        setOrder("desc");
+        setOrderBy("date");
+        break;
+      case sortingTypes.dateAscending:
+        setOrder("asc");
+        setOrderBy("date");
+        break;
+      case sortingTypes.nameDescending:
+        setOrder("desc");
+        setOrderBy("username");
+        break;
+      case sortingTypes.nameAscending:
+        setOrder("asc");
+        setOrderBy("username");
+        break;
+      case sortingTypes.amountDescending:
+        setOrder("desc");
+        setOrderBy("amount");
+        break;
+      case sortingTypes.amountAscending:
+        setOrder("asc");
+        setOrderBy("amount");
+        break;
+      default:
+        setOrder("desc");
+        setOrderBy("date");
+        break;
+    }
+  };
+
   const handleRepeat = (
     event: React.MouseEvent<unknown>,
     row: ITransaction
@@ -334,12 +370,18 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
       />
     </Fragment>
   );
+
+  //Get unique users from all transactions
+  const users = [...new Set(transactions.map((t) => t.username))];
+
   const transactionsList = (
     <Fragment>
       <FiltersDrawer
         filter={filter}
         handleFilterChange={handleFilterChange}
+        handleSortChange={handleSortChange}
         open={showFiltersDrawer}
+        users={users}
         onClose={closeFiltersDrawer}
         handleDateFilterChange={handleDateFilterChange}
         handleResetFilter={handleResetFilter}
@@ -358,13 +400,6 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
                     )}
                   </ListItemIcon>
                   <ListItemText
-                    secondary={
-                      <Fragment>
-                        {`${t.amount > 0 ? "From: " : "To: "} ${t.username}`}
-                        <br />
-                        {`Date: ${t.date}`}
-                      </Fragment>
-                    }
                     primary={
                       <Typography
                         variant="subtitle1"
@@ -373,20 +408,58 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
                         {t.amount} PW
                       </Typography>
                     }
+                    secondary={
+                      <Fragment>
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          mb={1}
+                          component="span"
+                        >
+                          <AccountCircleIcon color="inherit" fontSize="small" />
+                          {t.username}
+                        </Box>
+
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          component="span"
+                          mb={1}
+                        >
+                          <EventIcon color="inherit" fontSize="small" />
+                          {t.date}
+                        </Box>
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          component="span"
+                        >
+                          <AccountBalanceWalletOutlinedIcon
+                            color="inherit"
+                            fontSize="small"
+                          />
+                          {t.balance} PW
+                        </Box>
+
+                        {t.amount < 0 ? (
+                          <Box
+                            textAlign="right"
+                            component="span"
+                            display="block"
+                          >
+                            <Button
+                              color="primary"
+                              onClick={(event: React.MouseEvent<unknown>) =>
+                                handleRepeat(event, t)
+                              }
+                            >
+                              Repeat
+                            </Button>
+                          </Box>
+                        ) : null}
+                      </Fragment>
+                    }
                   />
-                  {t.amount < 0 ? (
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        edge="end"
-                        color="primary"
-                        onClick={(event: React.MouseEvent<unknown>) =>
-                          handleRepeat(event, t)
-                        }
-                      >
-                        <RepeatIcon />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  ) : null}
                 </ListItem>
                 <Divider component="li" className={classes.divider} />
               </Fragment>
@@ -419,6 +492,7 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
           handleOpenDialog={handleOpenDialog}
           refreshTransactions={refreshTransactions}
           filter={filter}
+          users={users}
           handleFilterChange={handleFilterChange}
           handleDateFilterChange={handleDateFilterChange}
           handleResetFilter={handleResetFilter}
