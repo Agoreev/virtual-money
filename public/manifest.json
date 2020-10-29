@@ -1,9 +1,0 @@
-{
-  "short_name": "Virtual money",
-  "name": "Virtual money",
-  "icons": [],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
-}
