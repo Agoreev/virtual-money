@@ -255,11 +255,13 @@ const NavBar: React.FC<INavBarProps> = ({ user, logout }) => {
                   }
                 />
               </Button>
-              <ProfileMenu
-                anchorEl={profileEl}
-                handleClose={handleCloseProfileMenu}
-                logout={logout}
-              />
+              <Tooltip title="profile">
+                <ProfileMenu
+                  anchorEl={profileEl}
+                  handleClose={handleCloseProfileMenu}
+                  logout={logout}
+                />
+              </Tooltip>
             </ListItem>
           </Box>
         </Toolbar>
