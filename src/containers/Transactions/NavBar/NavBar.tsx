@@ -181,7 +181,7 @@ const NavBar: React.FC<INavBarProps> = ({ user }) => {
                 color="primary"
                 className={classes.brandText}
               >
-                Virtual
+                Parrot
               </Typography>
               <Typography
                 variant="h4"
@@ -189,7 +189,7 @@ const NavBar: React.FC<INavBarProps> = ({ user }) => {
                 color="secondary"
                 className={classes.brandText}
               >
-                Money
+                Wings
               </Typography>
             </Hidden>
           </Box>

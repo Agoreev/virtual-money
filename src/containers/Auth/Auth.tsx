@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import {
   makeStyles,
   Grid,
@@ -8,9 +8,10 @@ import {
   Box,
   Button,
   CircularProgress,
+  Link,
 } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import { Link, useLocation, Redirect } from "react-router-dom";
+import { Link as RouterLink, useLocation, Redirect } from "react-router-dom";
 import { ThunkDispatch } from "redux-thunk";
 import { connect, ConnectedProps } from "react-redux";
 import { RootState } from "../../store/index";
@@ -27,13 +28,14 @@ import ButtonCircularProgress from "../../components/ui/ButtonCircularProgress";
 import HighlitedInformation from "../../components/ui/HighlightedInformation";
 import { FormInput, PasswordInput } from "../../components/ui/Input";
 import Copyright from "../../components/copyright";
+import parrot from "./parrot.jpeg";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100vh",
   },
   image: {
-    backgroundImage: "url(https://source.unsplash.com/random)",
+    backgroundImage: `url(${parrot})`,
     backgroundRepeat: "no-repeat",
     backgroundColor:
       theme.palette.type === "light"
@@ -53,7 +55,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: "100%",
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -353,20 +354,46 @@ const Auth: React.FC<PropsFromRedux> = ({
       <HighlitedInformation>{error}</HighlitedInformation>
     ) : null;
   const formActions = (
-    <Button
-      type="submit"
-      fullWidth
-      variant="contained"
-      color="secondary"
-      disabled={
-        isLoading ||
-        (isRegister ? !registerState.formIsValid : !loginState.formIsValid)
-      }
-      size="large"
-    >
-      {isRegister ? "REGISTER" : "LOGIN"}
-      {isLoading && <ButtonCircularProgress />}
-    </Button>
+    <Fragment>
+      <Button
+        type="submit"
+        fullWidth
+        variant="contained"
+        color="secondary"
+        className={classes.submit}
+        disabled={
+          isLoading ||
+          (isRegister ? !registerState.formIsValid : !loginState.formIsValid)
+        }
+        size="large"
+      >
+        {isRegister ? "SIGN UP" : "SIGN IN"}
+        {isLoading && <ButtonCircularProgress />}
+      </Button>
+      {isRegister ? (
+        <Link
+          to="/"
+          variant="body1"
+          color="secondary"
+          align="right"
+          display="block"
+          component={RouterLink}
+        >
+          Already have an account? Sign in
+        </Link>
+      ) : (
+        <Link
+          to="/register"
+          variant="body1"
+          color="secondary"
+          align="right"
+          display="block"
+          component={RouterLink}
+        >
+          Don't have an account? Sign Up
+        </Link>
+      )}
+    </Fragment>
   );
 
   if (isLoggedIn) {
@@ -377,34 +404,41 @@ const Auth: React.FC<PropsFromRedux> = ({
     <Grid container component="main" className={classes.root}>
       <Grid item xs={false} sm={4} md={7} className={classes.image} />
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-        <div className={classes.paper}>
-          <Box display="flex" justifyContent="space-around" width="300px">
-            <Link to="/">
-              <Avatar className={classes.avatar}>
-                <LockOutlinedIcon />
-              </Avatar>
-              <Typography component="h1" variant="h5">
-                Login
-              </Typography>
-            </Link>
-            <Link to="/register">
-              <Avatar className={classes.avatar}>
-                <LockOutlinedIcon />
-              </Avatar>
-              <Typography component="h1" variant="h5">
-                Register
-              </Typography>
-            </Link>
-          </Box>
-          <form onSubmit={submitHandler}>
-            {formContent}
-            {formActions}
-            {errorsInfo}
-          </form>
-          <Box mt={3}>
-            <Copyright />
-          </Box>
-        </div>
+        <Grid container justify="center">
+          <Grid item xs={12} sm={9}>
+            <div className={classes.paper}>
+              {isRegister ? (
+                <Fragment>
+                  <Avatar className={classes.avatar}>
+                    <LockOutlinedIcon />
+                  </Avatar>
+                  <Typography component="h1" variant="h5">
+                    Sign up
+                  </Typography>
+                </Fragment>
+              ) : (
+                <Fragment>
+                  <Avatar className={classes.avatar}>
+                    <LockOutlinedIcon />
+                  </Avatar>
+                  <Typography component="h1" variant="h5">
+                    Sign in
+                  </Typography>
+                </Fragment>
+              )}
+
+              <form onSubmit={submitHandler} className={classes.form}>
+                {formContent}
+                {formActions}
+                {errorsInfo}
+              </form>
+
+              <Box mt={3}>
+                <Copyright />
+              </Box>
+            </div>
+          </Grid>
+        </Grid>
       </Grid>
     </Grid>
   );
