@@ -14,9 +14,11 @@ const useStules = makeStyles((theme) => ({
   dialogPaper: {
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
     paddingBottom: theme.spacing(3),
-    maxWidth: 420,
+    width: 350,
+    [theme.breakpoints.down("xs")]: {
+      width: "auto",
+    },
   },
   actions: {
     marginTop: theme.spacing(2),

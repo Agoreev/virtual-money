@@ -13,6 +13,7 @@ import {
   makeStyles,
   List,
   Tooltip,
+  Button,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
@@ -22,6 +23,7 @@ import { NavLink } from "react-router-dom";
 import NavigationDrawer from "../../../components/ui/NavigationDrawer";
 import Balance from "../Components/Balance";
 import { IUser } from "../../../store/auth/types";
+import ProfileMenu from "../../../components/ui/ProfileMenu";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -39,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
   appBarToolbar: {
     display: "flex",
     justifyContent: "space-between",
+    overflow: "hidden",
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
     [theme.breakpoints.up("sm")]: {
@@ -107,9 +110,16 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: "'Baloo Bhaijaan', cursive",
     fontWeight: 400,
   },
+  profile: {
+    textTransform: "none",
+  },
   username: {
     paddingLeft: 0,
     paddingRight: theme.spacing(2),
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    width: 80,
   },
   justifyCenter: {
     justifyContent: "center",
@@ -123,8 +133,9 @@ const useStyles = makeStyles((theme) => ({
 
 interface INavBarProps {
   user?: IUser | null;
+  logout: () => void;
 }
-const NavBar: React.FC<INavBarProps> = ({ user }) => {
+const NavBar: React.FC<INavBarProps> = ({ user, logout }) => {
   const classes = useStyles();
 
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -137,13 +148,30 @@ const NavBar: React.FC<INavBarProps> = ({ user }) => {
     setIsMobileOpen(true);
   };
 
+  const [profileEl, setProfileEl] = useState<null | HTMLElement>(null);
+
+  const handleOpenProfileMenu = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    setProfileEl(event.currentTarget);
+  };
+
+  const handleCloseProfileMenu = () => {
+    setProfileEl(null);
+  };
+
   const menuItems = [
     {
       link: "/transactions",
       name: "Transactions",
       onClick: closeMobileDrawer,
       icon: {
-        desktop: <AccountBalanceIcon fontSize="small" className="text-white" />, //TODO Change color on active state
+        desktop: (
+          <AccountBalanceIcon
+            fontSize="small"
+            className={classes.textPrimary}
+          />
+        ),
         mobile: <AccountBalanceIcon className="text-white" />,
       },
     },
@@ -207,15 +235,30 @@ const NavBar: React.FC<INavBarProps> = ({ user }) => {
               disableGutters
               className={`${classes.iconListItem} ${classes.smBordered}`}
             >
-              <Avatar
-                alt="profile picture"
-                src=""
-                className={classes.accountAvatar}
-              />
-              <ListItemText
-                primary={
-                  <Typography color="textPrimary">{user!.name}</Typography>
-                }
+              <Button
+                onClick={handleOpenProfileMenu}
+                className={classes.profile}
+              >
+                <Avatar
+                  alt="profile picture"
+                  src=""
+                  className={classes.accountAvatar}
+                />
+                <ListItemText
+                  primary={
+                    <Typography
+                      color="textPrimary"
+                      className={classes.username}
+                    >
+                      {user!.name}
+                    </Typography>
+                  }
+                />
+              </Button>
+              <ProfileMenu
+                anchorEl={profileEl}
+                handleClose={handleCloseProfileMenu}
+                logout={logout}
               />
             </ListItem>
           </Box>

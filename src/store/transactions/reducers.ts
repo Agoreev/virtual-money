@@ -9,11 +9,13 @@ import {
   FETCH_TRANSACTIONS_SUCCESS,
   FETCH_TRANSACTIONS_FAILED,
   CREATE_TRANSACTION_ERROR_CLEAR,
+  CREATE_TRANSACTION_INIT,
 } from "./types";
 
 const initialState: TransactionsState = {
   transactions: [],
   createLoading: false,
+  createSuccess: false,
   loading: false,
   error: null,
 };
@@ -23,6 +25,11 @@ const reducer = (
   action: createTransactionActionTypes | fetchTransactionActionTypes
 ): TransactionsState => {
   switch (action.type) {
+    case CREATE_TRANSACTION_INIT:
+      return {
+        ...state,
+        createSuccess: false,
+      };
     case CREATE_TRANSACTION_START:
       return {
         ...state,
@@ -34,6 +41,7 @@ const reducer = (
         ...state,
         transactions: [...state.transactions, action.payload],
         createLoading: false,
+        createSuccess: true,
         error: null,
       };
     case CREATE_TRANSACTION_FAILED:

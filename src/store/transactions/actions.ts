@@ -2,6 +2,7 @@ import { ThunkAction } from "redux-thunk";
 import { Action } from "redux";
 import {
   ITransaction,
+  CREATE_TRANSACTION_INIT,
   CREATE_TRANSACTION_START,
   CREATE_TRANSACTION_SUCCESS,
   CREATE_TRANSACTION_FAILED,
@@ -15,6 +16,12 @@ import {
 } from "./types";
 import { logout, balanceChange } from "../auth/actions";
 import { baseURL } from "../../api/api";
+
+export const createTransactionInit = (): createTransactionActionTypes => {
+  return {
+    type: CREATE_TRANSACTION_INIT,
+  };
+};
 
 const createTransactionStart = (): createTransactionActionTypes => {
   return {
@@ -74,10 +81,15 @@ export const createTransaction = (
           },
         }
       );
-      const transactionJSON = await transactionResp.json();
-      const transaction: ITransaction = transactionJSON["trans_token"];
-      dispatch(createTransactionSuccess(transaction));
-      dispatch(balanceChange(transaction.balance));
+      if (!transactionResp.ok) {
+        const error: string = await transactionResp.text();
+        dispatch(createTransactionFailed(error));
+      } else {
+        const transactionJSON = await transactionResp.json();
+        const transaction: ITransaction = transactionJSON["trans_token"];
+        dispatch(createTransactionSuccess(transaction));
+        dispatch(balanceChange(transaction.balance));
+      }
     } catch (error) {
       console.log(error);
       dispatch(createTransactionFailed(error));
@@ -134,10 +146,15 @@ export const fetchTransactions = (): ThunkAction<
           },
         }
       );
-      const transactionsJSON = await transactionsResp.json();
-      const transactions: ITransaction[] = transactionsJSON["trans_token"];
-      //2. Dispatchtransactions success action with transactions
-      dispatch(fetchTransactionsSuccess(transactions));
+      if (!transactionsResp.ok) {
+        const error: string = await transactionsResp.text();
+        dispatch(fetchTransactionsFailed(error));
+      } else {
+        const transactionsJSON = await transactionsResp.json();
+        const transactions: ITransaction[] = transactionsJSON["trans_token"];
+        //2. Dispatch transactions success action with transactions
+        dispatch(fetchTransactionsSuccess(transactions));
+      }
     } catch (error) {
       console.log(error);
       dispatch(fetchTransactionsFailed(error));

@@ -22,6 +22,7 @@ import {
   Typography,
   Divider,
   Hidden,
+  Container,
 } from "@material-ui/core";
 import RepeatIcon from "@material-ui/icons/Repeat";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
@@ -101,6 +102,10 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    "@keyframes fadeIn": {
+      from: { opacity: 0 },
+      to: { opacity: 1 },
+    },
     root: {
       width: "100%",
     },
@@ -109,6 +114,7 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingRight: theme.spacing(3),
       paddingLeft: theme.spacing(3),
       marginBottom: theme.spacing(2),
+      animation: "$fadeIn 0.5s",
     },
     repeatButton: {
       padding: 0,
@@ -181,17 +187,24 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
   // Filter transactions on filter or transactions change
   useEffect(() => {
     setFilteredTransactions(
-      transactions.filter((t) => {
-        return (
-          ((filter.credit && t.amount > 0) || (filter.debet && t.amount < 0)) &&
-          ((filter.name && t.username.includes(filter.name)) || !filter.name) &&
-          ((filter.amount && Math.abs(t.amount) === parseInt(filter.amount)) ||
-            !filter.amount) &&
-          ((filter.date &&
-            new Date(t.date).toDateString() === filter.date.toDateString()) ||
-            !filter.date)
-        );
-      })
+      transactions
+        .map((t) => {
+          return { ...t, date: new Date(t.date).toLocaleString("en-GB") };
+        })
+        .filter((t) => {
+          return (
+            ((filter.credit && t.amount > 0) ||
+              (filter.debet && t.amount < 0)) &&
+            ((filter.name && t.username.includes(filter.name)) ||
+              !filter.name) &&
+            ((filter.amount &&
+              Math.abs(t.amount) === parseInt(filter.amount)) ||
+              !filter.amount) &&
+            ((filter.date &&
+              new Date(t.date).toDateString() === filter.date.toDateString()) ||
+              !filter.date)
+          );
+        })
     );
   }, [filter, transactions]);
 
@@ -376,16 +389,6 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
 
   const transactionsList = (
     <Fragment>
-      <FiltersDrawer
-        filter={filter}
-        handleFilterChange={handleFilterChange}
-        handleSortChange={handleSortChange}
-        open={showFiltersDrawer}
-        users={users}
-        onClose={closeFiltersDrawer}
-        handleDateFilterChange={handleDateFilterChange}
-        handleResetFilter={handleResetFilter}
-      />
       <List className={classes.transactionsList}>
         {stableSort(filteredTransactions, getComparator(order, orderBy)).map(
           (t) => {
@@ -416,7 +419,12 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
                           mb={1}
                           component="span"
                         >
-                          <AccountCircleIcon color="inherit" fontSize="small" />
+                          <Box mr={1}>
+                            <AccountCircleIcon
+                              color="inherit"
+                              fontSize="small"
+                            />
+                          </Box>
                           {t.username}
                         </Box>
 
@@ -426,7 +434,9 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
                           component="span"
                           mb={1}
                         >
-                          <EventIcon color="inherit" fontSize="small" />
+                          <Box mr={1}>
+                            <EventIcon color="inherit" fontSize="small" />
+                          </Box>
                           {t.date}
                         </Box>
                         <Box
@@ -434,10 +444,12 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
                           alignItems="center"
                           component="span"
                         >
-                          <AccountBalanceWalletOutlinedIcon
-                            color="inherit"
-                            fontSize="small"
-                          />
+                          <Box mr={1}>
+                            <AccountBalanceWalletOutlinedIcon
+                              color="inherit"
+                              fontSize="small"
+                            />
+                          </Box>
                           {t.balance} PW
                         </Box>
 
@@ -487,28 +499,40 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
 
   return (
     <div className={classes.root}>
-      <Paper className={classes.paper}>
-        <TransactionsToolbar
-          handleOpenDialog={handleOpenDialog}
-          refreshTransactions={refreshTransactions}
-          filter={filter}
-          users={users}
-          handleFilterChange={handleFilterChange}
-          handleDateFilterChange={handleDateFilterChange}
-          handleResetFilter={handleResetFilter}
-        />
-        <Hidden mdUp>
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={openFiltersDrawer}
-            startIcon={<FilterListIcon />}
-          >
-            Filters and sorting
-          </Button>
-        </Hidden>
-        {content}
-      </Paper>
+      <Container maxWidth="lg">
+        <Paper className={classes.paper}>
+          <TransactionsToolbar
+            handleOpenDialog={handleOpenDialog}
+            refreshTransactions={refreshTransactions}
+            filter={filter}
+            users={users}
+            handleFilterChange={handleFilterChange}
+            handleDateFilterChange={handleDateFilterChange}
+            handleResetFilter={handleResetFilter}
+          />
+          <Hidden lgUp>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={openFiltersDrawer}
+              startIcon={<FilterListIcon />}
+            >
+              Filters and sorting
+            </Button>
+            <FiltersDrawer
+              filter={filter}
+              handleFilterChange={handleFilterChange}
+              handleSortChange={handleSortChange}
+              open={showFiltersDrawer}
+              users={users}
+              onClose={closeFiltersDrawer}
+              handleDateFilterChange={handleDateFilterChange}
+              handleResetFilter={handleResetFilter}
+            />
+          </Hidden>
+          {content}
+        </Paper>
+      </Container>
     </div>
   );
 };

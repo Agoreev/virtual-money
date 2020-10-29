@@ -4,7 +4,6 @@ import {
   FormGroup,
   FormControlLabel,
   Switch,
-  Box,
 } from "@material-ui/core";
 
 interface ITypeSwitchProps {
@@ -19,32 +18,26 @@ const TypeSwitch: React.FC<ITypeSwitchProps> = ({
   row = false,
 }) => {
   return (
-    <Box overflow="hidden">
-      <FormControl component="fieldset">
-        <FormGroup row={row}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={type.debet}
-                onChange={handleChange}
-                name="debet"
-              />
-            }
-            label="debet"
-          />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={type.credit}
-                onChange={handleChange}
-                name="credit"
-              />
-            }
-            label="credit"
-          />
-        </FormGroup>
-      </FormControl>
-    </Box>
+    <FormControl component="fieldset">
+      <FormGroup row={row}>
+        <FormControlLabel
+          control={
+            <Switch checked={type.debet} onChange={handleChange} name="debet" />
+          }
+          label="debet"
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={type.credit}
+              onChange={handleChange}
+              name="credit"
+            />
+          }
+          label="credit"
+        />
+      </FormGroup>
+    </FormControl>
   );
 };
 

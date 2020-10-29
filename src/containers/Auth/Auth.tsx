@@ -184,6 +184,7 @@ const Auth: React.FC<PropsFromRedux> = ({
     formIsValid: false,
   };
 
+  //Check if user logged in
   useEffect(() => {
     const token: string | null = localStorage.getItem("token");
     if (token) {
@@ -193,6 +194,11 @@ const Auth: React.FC<PropsFromRedux> = ({
 
   const location = useLocation();
   const isRegister = location.pathname === "/register";
+
+  //Clear any auth errors on change form between sign in and sign up
+  useEffect(() => {
+    onAuthErrorClear();
+  }, [isRegister, onAuthErrorClear]);
 
   const [loginState, setLoginState] = useState<IForm>({ ...initialLoginState });
   const [registerState, setRegisterState] = useState<IForm>({
@@ -354,7 +360,7 @@ const Auth: React.FC<PropsFromRedux> = ({
       <HighlitedInformation>{error}</HighlitedInformation>
     ) : null;
   const formActions = (
-    <Fragment>
+    <Box mb={3}>
       <Button
         type="submit"
         fullWidth
@@ -393,7 +399,7 @@ const Auth: React.FC<PropsFromRedux> = ({
           Don't have an account? Sign Up
         </Link>
       )}
-    </Fragment>
+    </Box>
   );
 
   if (isLoggedIn) {

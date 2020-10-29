@@ -80,7 +80,7 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
       </Box>
 
       <Box className={classes.actions}>
-        <Hidden smDown>
+        <Hidden mdDown>
           <Box mr={2} ml={2} display="flex" alignItems="center">
             {!filter.credit ||
             !filter.debet ||
@@ -97,7 +97,7 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
               Filter
             </Typography>
           </Box>
-          <Box mr={2} width={160} flex="1 0 auto">
+          <Box mr={2} width={170} flex="1 0 auto">
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <KeyboardDatePicker
                 disableToolbar
@@ -114,7 +114,7 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
               />
             </MuiPickersUtilsProvider>
           </Box>
-          <Box mr={2} width={140}>
+          <Box mr={2} width={150}>
             <TextField
               select
               size="small"
@@ -135,7 +135,7 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
               ))}
             </TextField>
           </Box>
-          <Box mr={2} width={90} flex="1 0 auto">
+          <Box mr={2} width={110} flex="1 0 auto">
             <TextField
               variant="outlined"
               label="Amount"
@@ -146,6 +146,7 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
               onChange={handleFilterChange}
             />
           </Box>
+
           <TypeSwitch
             type={{ debet: filter.debet, credit: filter.credit }}
             handleChange={handleFilterChange}

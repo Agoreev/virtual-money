@@ -33,6 +33,7 @@ const mapDispatchToProps = (dispatch: ThunkDispatch<RootState, any, any>) => {
 
 const mapStateToProps = (state: RootState) => ({
   isLoading: state.transactions.createLoading,
+  createSuccess: state.transactions.createSuccess,
   error: state.transactions.error,
 });
 
@@ -57,6 +58,7 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
   onCreateTransaction,
   onCreateTransactionErrorClear,
   isLoading,
+  createSuccess,
   error,
   transactionValues,
 }) => {
@@ -193,6 +195,15 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
     };
   }, [userValue, userInputValue]);
 
+  // Close diaolg and send notification on succesfully created transaction
+  useEffect(() => {
+    if (createSuccess) {
+      setOpenNotification(true);
+
+      onClose();
+    }
+  }, [createSuccess, setOpenNotification, onClose]);
+
   // Cleans dialog form on dialog exit
   const onDialogExited = () => {
     setFormState({ ...initialFormState });
@@ -304,9 +315,6 @@ const CreateTransactionDialog: React.FC<CreateTransactionDialogProps> = ({
         amount: parseInt(amount.value),
       };
       onCreateTransaction(transactionData);
-      setOpenNotification(true);
-
-      onClose();
     }
   };
 

@@ -5,11 +5,11 @@ import { ThunkDispatch } from "redux-thunk";
 import { Redirect } from "react-router-dom";
 import { RootState } from "../../store/index";
 import {
-  createTransaction,
+  createTransactionInit,
   fetchTransactions,
   ITransactionData,
 } from "../../store/transactions/actions";
-import { getUserInfo } from "../../store/auth/actions";
+import { getUserInfo, logout } from "../../store/auth/actions";
 import NavBar from "./NavBar/NavBar";
 import TransactionsView from "./TransactionsView";
 import CreateTransactionDialog from "./CreateTransactionDialog/CreateTransactionDialog";
@@ -30,18 +30,15 @@ const useStyles = makeStyles((theme) => ({
 const mapStateToProps = (state: RootState) => ({
   transactions: state.transactions.transactions,
   transactionsLoading: state.transactions.loading,
-  transactionsError: state.transactions.error,
-  userLoading: state.auth.loading,
-  userError: state.auth.error,
   user: state.auth.user,
 });
 
 const mapDispatchToProps = (dispatch: ThunkDispatch<RootState, any, any>) => {
   return {
-    onCreateTransaction: (data: ITransactionData) =>
-      dispatch(createTransaction(data)),
+    onCreateTransactionInit: () => dispatch(createTransactionInit()),
     onFetchTransactions: () => dispatch(fetchTransactions()),
     onGetUserInfo: () => dispatch(getUserInfo()),
+    onLogout: () => dispatch(logout()),
   };
 };
 
@@ -50,15 +47,13 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 const Transactions: React.FC<PropsFromRedux> = ({
-  onCreateTransaction,
+  onCreateTransactionInit,
   onFetchTransactions,
   onGetUserInfo,
   user,
+  onLogout,
   transactions,
   transactionsLoading,
-  transactionsError,
-  userLoading,
-  userError,
 }) => {
   const classes = useStyles();
 
@@ -88,6 +83,7 @@ const Transactions: React.FC<PropsFromRedux> = ({
     if (transactionData) {
       setTransactionValues(transactionData);
     }
+    onCreateTransactionInit();
     setOpenCreateTransaction(true);
   };
   const handleCloseCreateTransaction = () => {
@@ -108,7 +104,7 @@ const Transactions: React.FC<PropsFromRedux> = ({
 
   return (
     <div className="Transactions">
-      <NavBar user={user} />
+      <NavBar user={user} logout={onLogout} />
       <Box mt={3}>
         <main className={classes.main}>
           <TransactionsView
