@@ -119,7 +119,10 @@ const useStyles = makeStyles((theme) => ({
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
     overflow: "hidden",
-    width: 80,
+    maxWidth: 150,
+    [theme.breakpoints.down("xs")]: {
+      maxWidth: 80,
+    },
   },
   justifyCenter: {
     justifyContent: "center",
