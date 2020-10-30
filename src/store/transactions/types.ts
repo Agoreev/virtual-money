@@ -39,7 +39,6 @@ interface createTransactionStart {
 
 interface createTransactionSuccess {
   type: typeof CREATE_TRANSACTION_SUCCESS;
-  payload: ITransaction;
 }
 
 interface createTransactionFailed {

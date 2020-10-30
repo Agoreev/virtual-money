@@ -8,7 +8,6 @@ import {
   AUTH_SUCCESS,
   authActionTypes,
   AUTH_ERROR_CLEAR,
-  BALANCE_CHANGE,
 } from "./types";
 import { IAuthData } from "../../interfaces";
 import { Action } from "redux";
@@ -44,13 +43,6 @@ export const logout = (): authActionTypes => {
   localStorage.removeItem("token");
   return {
     type: LOGOUT,
-  };
-};
-
-export const balanceChange = (balance: number): authActionTypes => {
-  return {
-    type: BALANCE_CHANGE,
-    payload: balance,
   };
 };
 

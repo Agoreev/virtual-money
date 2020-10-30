@@ -40,7 +40,6 @@ const reducer = (
     case CREATE_TRANSACTION_SUCCESS:
       return {
         ...state,
-        transactions: [...state.transactions, action.payload],
         createLoading: false,
         createSuccess: true,
         error: null,
@@ -60,14 +59,12 @@ const reducer = (
       return {
         ...state,
         loading: true,
-        error: null,
       };
     case FETCH_TRANSACTIONS_SUCCESS:
       return {
         ...state,
         transactions: action.payload,
         loading: false,
-        error: null,
       };
     case FETCH_TRANSACTIONS_FAILED:
       return {

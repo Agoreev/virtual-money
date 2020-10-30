@@ -15,7 +15,7 @@ import {
   CREATE_TRANSACTION_ERROR_CLEAR,
   CREATE_TRANSACTION_EXITED,
 } from "./types";
-import { logout, balanceChange } from "../auth/actions";
+import { logout, getUserInfo } from "../auth/actions";
 import { baseURL } from "../../api/api";
 
 export const createTransactionInit = (): createTransactionActionTypes => {
@@ -30,12 +30,9 @@ const createTransactionStart = (): createTransactionActionTypes => {
   };
 };
 
-const createTransactionSuccess = (
-  transaction: ITransaction
-): createTransactionActionTypes => {
+const createTransactionSuccess = (): createTransactionActionTypes => {
   return {
     type: CREATE_TRANSACTION_SUCCESS,
-    payload: transaction,
   };
 };
 
@@ -90,12 +87,14 @@ export const createTransaction = (
       );
       if (!transactionResp.ok) {
         const error: string = await transactionResp.text();
+        //Dispatch get user info to refresh balance
+        dispatch(getUserInfo());
+        dispatch(fetchTransactions());
         dispatch(createTransactionFailed(error));
       } else {
-        const transactionJSON = await transactionResp.json();
-        const transaction: ITransaction = transactionJSON["trans_token"];
-        dispatch(createTransactionSuccess(transaction));
-        dispatch(balanceChange(transaction.balance));
+        dispatch(getUserInfo());
+        dispatch(fetchTransactions());
+        dispatch(createTransactionSuccess());
       }
     } catch (error) {
       console.log(error);

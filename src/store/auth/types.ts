@@ -42,15 +42,9 @@ interface logoutAction {
   type: typeof LOGOUT;
 }
 
-interface balanceChange {
-  type: typeof BALANCE_CHANGE;
-  payload: number;
-}
-
 export type authActionTypes =
   | authStartAction
   | authSuccessAction
   | authFailedAction
   | authErrorClear
-  | logoutAction
-  | balanceChange;
+  | logoutAction;
