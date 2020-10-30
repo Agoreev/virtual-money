@@ -13,6 +13,7 @@ import {
   FETCH_TRANSACTIONS_SUCCESS,
   FETCH_TRANSACTIONS_FAILED,
   CREATE_TRANSACTION_ERROR_CLEAR,
+  CREATE_TRANSACTION_EXITED,
 } from "./types";
 import { logout, balanceChange } from "../auth/actions";
 import { baseURL } from "../../api/api";
@@ -50,6 +51,12 @@ const createTransactionFailed = (
 export const createTransactionErrorClear = (): createTransactionActionTypes => {
   return {
     type: CREATE_TRANSACTION_ERROR_CLEAR,
+  };
+};
+
+export const createTransactionExited = (): createTransactionActionTypes => {
+  return {
+    type: CREATE_TRANSACTION_EXITED,
   };
 };
 

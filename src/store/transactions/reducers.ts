@@ -10,6 +10,7 @@ import {
   FETCH_TRANSACTIONS_FAILED,
   CREATE_TRANSACTION_ERROR_CLEAR,
   CREATE_TRANSACTION_INIT,
+  CREATE_TRANSACTION_EXITED,
 } from "./types";
 
 const initialState: TransactionsState = {
@@ -73,6 +74,11 @@ const reducer = (
         ...state,
         loading: false,
         error: action.payload,
+      };
+    case CREATE_TRANSACTION_EXITED:
+      return {
+        ...state,
+        createSuccess: false,
       };
     default:
       return state;

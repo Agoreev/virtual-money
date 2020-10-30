@@ -19,6 +19,7 @@ export const CREATE_TRANSACTION_START = "CREATE_TRANSACTION_START";
 export const CREATE_TRANSACTION_SUCCESS = "CREATE_TRANSACTION_SUCCESS";
 export const CREATE_TRANSACTION_FAILED = "CREATE_TRANSACTION_FAILED";
 export const CREATE_TRANSACTION_ERROR_CLEAR = "CREATE_TRANSACTION_ERROR_CLEAR";
+export const CREATE_TRANSACTION_EXITED = "CREATE_TRANSACTION_EXITED";
 
 export const FETCH_TRANSACTIONS_START = "FETCH_TRANSACTIONS_START";
 export const FETCH_TRANSACTIONS_SUCCESS = "FETCH_TRANSACTIONS_SUCCESS";
@@ -26,6 +27,10 @@ export const FETCH_TRANSACTIONS_FAILED = "FETCH_TRANSACTIONS_FAILED";
 
 interface createTransactionInit {
   type: typeof CREATE_TRANSACTION_INIT;
+}
+
+interface createTransactionExited {
+  type: typeof CREATE_TRANSACTION_EXITED;
 }
 
 interface createTransactionStart {
@@ -65,7 +70,8 @@ export type createTransactionActionTypes =
   | createTransactionStart
   | createTransactionSuccess
   | createTransactionFailed
-  | createTransactionErrorClear;
+  | createTransactionErrorClear
+  | createTransactionExited;
 
 export type fetchTransactionActionTypes =
   | fetchTransactionsStart
