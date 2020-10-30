@@ -158,7 +158,8 @@ export interface IFilter {
   debet: boolean;
   name?: string | null;
   amount?: string | null;
-  date?: Date | null;
+  toDate?: Date | null;
+  fromDate?: Date | null;
 }
 
 const TransactionsView: React.FC<ITransactionsViewProps> = ({
@@ -180,7 +181,8 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
     debet: true,
     name: "",
     amount: "",
-    date: null,
+    fromDate: null,
+    toDate: null,
   });
   const [showFiltersDrawer, setShowFiltersDrawer] = useState<boolean>(false);
 
@@ -188,9 +190,6 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
   useEffect(() => {
     setFilteredTransactions(
       transactions
-        .map((t) => {
-          return { ...t, date: new Date(t.date).toLocaleString("en-GB") };
-        })
         .filter((t) => {
           return (
             ((filter.credit && t.amount > 0) ||
@@ -200,10 +199,14 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
             ((filter.amount &&
               Math.abs(t.amount) === parseInt(filter.amount)) ||
               !filter.amount) &&
-            ((filter.date &&
-              new Date(t.date).toDateString() === filter.date.toDateString()) ||
-              !filter.date)
+            ((filter.toDate && new Date(t.date) <= filter.toDate) ||
+              !filter.toDate) &&
+            ((filter.fromDate && new Date(t.date) >= filter.fromDate) ||
+              !filter.fromDate)
           );
+        })
+        .map((t) => {
+          return { ...t, date: new Date(t.date).toLocaleString("en-GB") };
         })
     );
   }, [filter, transactions]);
@@ -215,11 +218,19 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
     }
   }, [filteredTransactions, page, rowsPerPage]);
 
-  const openFiltersDrawer = () => {
-    setShowFiltersDrawer(true);
-  };
-  const closeFiltersDrawer = () => {
-    setShowFiltersDrawer(false);
+  const toggleFilterDrawer = (open: boolean) => (
+    event: React.KeyboardEvent | React.MouseEvent
+  ) => {
+    if (
+      event &&
+      event.type === "keydown" &&
+      ((event as React.KeyboardEvent).key === "Tab" ||
+        (event as React.KeyboardEvent).key === "Shift")
+    ) {
+      return;
+    }
+
+    setShowFiltersDrawer(open);
   };
 
   const handleResetFilter = () => {
@@ -229,7 +240,8 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
       debet: true,
       name: "",
       amount: "",
-      date: null,
+      toDate: null,
+      fromDate: null,
     });
   };
 
@@ -241,8 +253,12 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
     }
   };
 
-  const handleDateFilterChange = (date: Date | null) => {
-    setFilter({ ...filter, date });
+  const handleFromDateFilterChange = (date: Date | null) => {
+    setFilter({ ...filter, fromDate: date });
+  };
+
+  const handleToDateFilterChange = (date: Date | null) => {
+    setFilter({ ...filter, toDate: date });
   };
 
   const handleRequestSort = (
@@ -404,12 +420,14 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
                   </ListItemIcon>
                   <ListItemText
                     primary={
-                      <Typography
-                        variant="subtitle1"
-                        className={t.amount > 0 ? "text-green" : "text-red"}
-                      >
-                        {t.amount} PW
-                      </Typography>
+                      <Box component="span" mb={1} display="block">
+                        <Typography
+                          variant="subtitle1"
+                          className={t.amount > 0 ? "text-green" : "text-red"}
+                        >
+                          {t.amount} PW
+                        </Typography>
+                      </Box>
                     }
                     secondary={
                       <Fragment>
@@ -419,7 +437,7 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
                           mb={1}
                           component="span"
                         >
-                          <Box mr={1}>
+                          <Box mr={1} component="span">
                             <AccountCircleIcon
                               color="inherit"
                               fontSize="small"
@@ -434,7 +452,7 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
                           component="span"
                           mb={1}
                         >
-                          <Box mr={1}>
+                          <Box mr={1} component="span">
                             <EventIcon color="inherit" fontSize="small" />
                           </Box>
                           {t.date}
@@ -444,7 +462,7 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
                           alignItems="center"
                           component="span"
                         >
-                          <Box mr={1}>
+                          <Box mr={1} component="span">
                             <AccountBalanceWalletOutlinedIcon
                               color="inherit"
                               fontSize="small"
@@ -507,14 +525,15 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
             filter={filter}
             users={users}
             handleFilterChange={handleFilterChange}
-            handleDateFilterChange={handleDateFilterChange}
+            handleToDateFilterChange={handleToDateFilterChange}
+            handleFromDateFilterChange={handleFromDateFilterChange}
             handleResetFilter={handleResetFilter}
           />
           <Hidden lgUp>
             <Button
               variant="outlined"
               color="secondary"
-              onClick={openFiltersDrawer}
+              onClick={toggleFilterDrawer(true)}
               startIcon={<FilterListIcon />}
             >
               Filters and sorting
@@ -525,8 +544,9 @@ const TransactionsView: React.FC<ITransactionsViewProps> = ({
               handleSortChange={handleSortChange}
               open={showFiltersDrawer}
               users={users}
-              onClose={closeFiltersDrawer}
-              handleDateFilterChange={handleDateFilterChange}
+              toggle={toggleFilterDrawer}
+              handleToDateFilterChange={handleToDateFilterChange}
+              handleFromDateFilterChange={handleFromDateFilterChange}
               handleResetFilter={handleResetFilter}
             />
           </Hidden>

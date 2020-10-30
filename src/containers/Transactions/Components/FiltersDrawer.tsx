@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Drawer,
+  SwipeableDrawer,
   IconButton,
   Toolbar,
   Divider,
@@ -38,28 +38,38 @@ export enum sortingTypes {
 }
 interface IFiltersDrawer {
   open: boolean;
-  onClose: () => void;
+  toggle: (
+    open: boolean
+  ) => (event: React.KeyboardEvent | React.MouseEvent) => void;
   filter: IFilter;
   users: string[];
   handleFilterChange: (event: React.ChangeEvent<any>) => void;
-  handleDateFilterChange: (date: Date | null) => void;
+  handleToDateFilterChange: (date: Date | null) => void;
+  handleFromDateFilterChange: (date: Date | null) => void;
   handleResetFilter: () => void;
   handleSortChange: (event: React.ChangeEvent<any>) => void;
 }
 
 const FiltersDrawer: React.FC<IFiltersDrawer> = ({
-  onClose,
+  toggle,
   open,
   filter,
   users,
   handleFilterChange,
-  handleDateFilterChange,
+  handleToDateFilterChange,
+  handleFromDateFilterChange,
   handleResetFilter,
   handleSortChange,
 }) => {
   const classes = useStyles();
   return (
-    <Drawer anchor="right" open={open} variant="temporary" onClose={onClose}>
+    <SwipeableDrawer
+      anchor="right"
+      open={open}
+      variant="temporary"
+      onClose={toggle(false)}
+      onOpen={toggle(true)}
+    >
       <Toolbar disableGutters className={classes.toolbar}>
         <Box
           pl={3}
@@ -71,7 +81,7 @@ const FiltersDrawer: React.FC<IFiltersDrawer> = ({
         >
           <Typography variant="h6">Filters and sorting</Typography>
           <IconButton
-            onClick={onClose}
+            onClick={toggle(false)}
             color="primary"
             aria-label="Close Sidedrawer"
           >
@@ -125,15 +135,30 @@ const FiltersDrawer: React.FC<IFiltersDrawer> = ({
           <Box mb={2} mt={2}>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <KeyboardDatePicker
-                format="MM/dd/yyyy"
+                format="dd/MM/yyyy"
                 disableFuture
                 autoOk
-                name="date"
+                name="fromDate"
                 size="small"
                 inputVariant="outlined"
-                label="Date"
-                value={filter.date}
-                onChange={handleDateFilterChange}
+                label="Date from"
+                value={filter.fromDate}
+                onChange={handleFromDateFilterChange}
+              />
+            </MuiPickersUtilsProvider>
+          </Box>
+          <Box mb={2} mt={2}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                format="dd/MM/yyyy"
+                disableFuture
+                autoOk
+                name="toDate"
+                size="small"
+                inputVariant="outlined"
+                label="Date to"
+                value={filter.toDate}
+                onChange={handleToDateFilterChange}
               />
             </MuiPickersUtilsProvider>
           </Box>
@@ -172,7 +197,8 @@ const FiltersDrawer: React.FC<IFiltersDrawer> = ({
           </Box>
           {!filter.credit ||
           !filter.debet ||
-          filter.date ||
+          filter.toDate ||
+          filter.fromDate ||
           filter.name ||
           filter.amount ? (
             <Button
@@ -186,7 +212,7 @@ const FiltersDrawer: React.FC<IFiltersDrawer> = ({
           ) : null}
         </Box>
       </Box>
-    </Drawer>
+    </SwipeableDrawer>
   );
 };
 

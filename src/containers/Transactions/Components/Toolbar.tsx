@@ -44,7 +44,8 @@ interface ITransactionsToolbarProps {
   filter: IFilter;
   users: string[];
   handleFilterChange: (event: React.ChangeEvent<any>) => void;
-  handleDateFilterChange: (date: Date | null) => void;
+  handleToDateFilterChange: (date: Date | null) => void;
+  handleFromDateFilterChange: (date: Date | null) => void;
   handleResetFilter: () => void;
 }
 const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
@@ -53,7 +54,8 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
   filter,
   users,
   handleFilterChange,
-  handleDateFilterChange,
+  handleToDateFilterChange,
+  handleFromDateFilterChange,
   handleResetFilter,
 }) => {
   const classes = useToolbarStyles();
@@ -84,7 +86,8 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
           <Box mr={2} ml={2} display="flex" alignItems="center">
             {!filter.credit ||
             !filter.debet ||
-            filter.date ||
+            filter.toDate ||
+            filter.fromDate ||
             filter.name ||
             filter.amount ? (
               <Tooltip title="Reset filter">
@@ -102,19 +105,36 @@ const TransactionsToolbar: React.FC<ITransactionsToolbarProps> = ({
               <KeyboardDatePicker
                 disableToolbar
                 variant="inline"
-                format="MM/dd/yyyy"
+                format="dd/MM/yyyy"
                 disableFuture
                 autoOk
-                name="date"
+                name="fromDate"
                 size="small"
                 inputVariant="outlined"
-                label="Date"
-                value={filter.date}
-                onChange={handleDateFilterChange}
+                label="Date from"
+                value={filter.fromDate}
+                onChange={handleFromDateFilterChange}
               />
             </MuiPickersUtilsProvider>
           </Box>
-          <Box mr={2} width={150}>
+          <Box mr={2} width={170} flex="1 0 auto">
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDatePicker
+                disableToolbar
+                variant="inline"
+                format="dd/MM/yyyy"
+                disableFuture
+                autoOk
+                name="toDate"
+                size="small"
+                inputVariant="outlined"
+                label="Date to"
+                value={filter.toDate}
+                onChange={handleToDateFilterChange}
+              />
+            </MuiPickersUtilsProvider>
+          </Box>
+          <Box mr={2} width={150} maxWidth={150}>
             <TextField
               select
               size="small"

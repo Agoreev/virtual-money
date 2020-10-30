@@ -235,33 +235,34 @@ const NavBar: React.FC<INavBarProps> = ({ user, logout }) => {
               disableGutters
               className={`${classes.iconListItem} ${classes.smBordered}`}
             >
-              <Button
-                onClick={handleOpenProfileMenu}
-                className={classes.profile}
-              >
-                <Avatar
-                  alt="profile picture"
-                  src=""
-                  className={classes.accountAvatar}
-                />
-                <ListItemText
-                  primary={
-                    <Typography
-                      color="textPrimary"
-                      className={classes.username}
-                    >
-                      {user!.name}
-                    </Typography>
-                  }
-                />
-              </Button>
               <Tooltip title="profile">
-                <ProfileMenu
-                  anchorEl={profileEl}
-                  handleClose={handleCloseProfileMenu}
-                  logout={logout}
-                />
+                <Button
+                  onClick={handleOpenProfileMenu}
+                  className={classes.profile}
+                >
+                  <Avatar
+                    alt="profile picture"
+                    src=""
+                    className={classes.accountAvatar}
+                  />
+
+                  <ListItemText
+                    primary={
+                      <Typography
+                        color="textPrimary"
+                        className={classes.username}
+                      >
+                        {user!.name}
+                      </Typography>
+                    }
+                  />
+                </Button>
               </Tooltip>
+              <ProfileMenu
+                anchorEl={profileEl}
+                handleClose={handleCloseProfileMenu}
+                logout={logout}
+              />
             </ListItem>
           </Box>
         </Toolbar>
